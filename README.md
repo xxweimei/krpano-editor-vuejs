@@ -1,5 +1,6 @@
 # krpano-editor-vuejs
 
+> 刚开始，不定期施工，工期未知
 > krpano editor vuejs
 
 ## Build Setup
