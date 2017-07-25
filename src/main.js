@@ -6,8 +6,14 @@ import Editor from './Editor'
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
-new Vue({
+let vm = new Vue({
   el: '#editor',
-  template: '<Editor/>',
-  components: { Editor }
+  template: '<Editor ref="editor"/>',
+  components: {Editor}
 })
+
+window.onready = function () {
+  vm.$refs.editor.onready()
+}
+
+
