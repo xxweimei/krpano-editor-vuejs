@@ -2,6 +2,8 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import Editor from './Editor'
+//noinspection ES6UnusedImports
+import Bulma from 'bulma'
 
 Vue.config.productionTip = false
 
