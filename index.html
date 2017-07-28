@@ -10,23 +10,21 @@
   <style>
     @-ms-viewport { width:device-width; }
     @media only screen and (min-device-width:800px) { html { overflow:hidden; } }
-    html { height:100%; }
-    body { height:100%; overflow:hidden; margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#FFFFFF; background-color:#000000; }
+    html,div { height:100%; }
+    body { height:100%; overflow:hidden; margin:0; padding:0; font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#FFFFFF; background-color:#333; }
   </style>
   <link rel="icon" href="/src/assets/logo.png">
 </head>
 <body>
-
 <script src="/static/tour.js"></script>
-
-<div id="pano" style="width:100%;height:100%;">
-  <noscript><table style="width:100%;height:100%;"><tr style="vertical-align:middle;"><td><div style="text-align:center;">ERROR:<br/><br/>Javascript not activated<br/><br/></div></td></tr></table></noscript>
-  <script>
-    embedpano({swf:"/static/tour.swf", xml:"/static/tour.xml", target:"pano", html5:"auto", mobilescale:1.0, passQueryParameters:true});
-  </script>
+<div class="columns is-gapless">
+  <div id="pano" class="column is-10">
+    <noscript><table style="width:100%;height:100%;"><tr style="vertical-align:middle;"><td><div style="text-align:center;">ERROR:<br/><br/>Javascript not activated<br/><br/></div></td></tr></table></noscript>
+    <script>
+      embedpano({swf:"/static/tour.swf", xml:"/static/tour.xml", target:"pano", html5:"auto", mobilescale:1.0, passQueryParameters:true});
+    </script>
+  </div>
+  <div id="editor" class="column is-2"></div>
 </div>
-
-<div id="editor"></div>
-
 </body>
 </html>

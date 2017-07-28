@@ -1,8 +1,6 @@
 <template>
   <div id="editor">
-    <div class="camera">
 
-    </div>
   </div>
 </template>
 
@@ -35,10 +33,4 @@
     top: 0;
   }
 
-  .camera {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
 </style>
