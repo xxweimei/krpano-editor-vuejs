@@ -37,15 +37,20 @@
         <div class="scene-module has-text-white" v-show="module == 0">
           <h5 class="title is-5 has-text-white scene-title">场景列表</h5>
           <div class="line"></div>
-          <div class="scene-item">
-            <div>场景一</div>
+          <div class="scene-item" v-for="scene in sceneList"
+               :class="{'scene-item-selected' : scene.index == currentSceneIndex}">
+            <div class="scene-name">{{scene.name}}</div>
             <figure class="image is-128x128">
               <img src="../static/panos/1.tiles/thumb.jpg">
             </figure>
-            <a class="button is-primary is-inverted is-outlined a-pencil"><span class="icon"><i class="fa fa-pencil"></i></span></a>
-            <a class="button is-primary is-inverted is-outlined a-home"><span class="icon"><i class="fa fa-home"></i></span></a>
+            <div class="a-pencil">
+              <a class="button is-primary is-inverted is-outlined"><span class="icon"><i
+                class="fa fa-pencil"></i></span></a>
+            </div>
+            <div class="a-home">
+              <a class="button is-primary is-inverted is-outlined"><span class="icon"><i class="fa fa-home"></i></span></a>
+            </div>
           </div>
-          <div class="line"></div>
         </div>
       </div>
     </div>
@@ -74,9 +79,14 @@
     components: {},
     data() {
       return {
+        //krpano对象
         krpano: document.getElementById("krpanoSWFObject"),
         //当前修改模块：0场景；1视角；2热点
-        module: 0
+        module: 0,
+        //场景列表
+        sceneList: [],
+        //当前场景序号
+        currentSceneIndex: 0
       }
     },
     methods: {
@@ -86,6 +96,9 @@
         this.krpano.set("layer[skin_control_bar].visible", false);
         this.krpano.set("layer[skin_splitter_bottom].visible", false);
         this.krpano.set("layer[skin_scroll_window].visible", false);
+        //初始化场景
+        this.sceneList = this.krpano.get("scene").getArray()
+        this.currentSceneIndex = this.krpano.get("scene").getItem(this.krpano.get("xml.scene")).index
       },
       changeModule(module) {
         this.module = module
@@ -251,18 +264,21 @@
     }
 
     .scene-item {
-      margin: 5px 0 20px 10px;
+      margin: 10px 0 10px 10px;
       height: 168px;
       width: 168px;
-      div {
-        line-height: 40px;
-        height: 40px;
+      border: 2px #333333 solid;
+
+      .scene-name {
+        line-height: 36px;
+        height: 36px;
         width: 168px;
+        padding-left: 5px;
       }
+
       a {
-        position: relative;
         height: 64px;
-        width: 40px;
+        width: 36px;
         background-color: rgb(70, 70, 70) !important;
         border-radius: 0;
         border: 0;
@@ -272,15 +288,25 @@
         }
       }
       .a-pencil {
-        left:128px;
+        position: relative;
+        left: 128px;
         bottom: 128px;
+        height: 64px;
+        width: 36px;
       }
+
       .a-home {
-        left:84px;
-        bottom: 64px;
+        position: relative;
+        left: 128px;
+        bottom: 128px;
+        height: 64px;
+        width: 36px;
       }
     }
-  }
 
+    .scene-item-selected {
+      border-color: #fbd14b;
+    }
+  }
 
 </style>
