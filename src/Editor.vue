@@ -2,7 +2,7 @@
   <div id="editor">
     <div class="columns is-gapless">
       <div class="column is-2 func-div">
-        <div class="has-text-centered has-text-white func-button">
+        <div class="has-text-centered has-text-white func-button" @click="save()">
           <span class="icon is-small"><i class="fa fa-floppy-o"></i></span>
           <span class="func-button-text">保存</span>
         </div>
@@ -37,18 +37,21 @@
         <div class="scene-module has-text-white" v-show="module == 0">
           <h5 class="title is-5 has-text-white scene-title">场景列表</h5>
           <div class="line"></div>
-          <div class="scene-item" v-for="scene in sceneList"
+          <div class="scene-item" v-for="scene in sceneList" @click="changeScene(scene)"
                :class="{'scene-item-selected' : scene.index == currentSceneIndex}">
             <div class="scene-name">{{scene.name}}</div>
             <figure class="image is-128x128">
               <img src="../static/panos/1.tiles/thumb.jpg">
             </figure>
-            <div class="a-pencil">
+            <div class="pencil" @click="">
               <a class="button is-primary is-inverted is-outlined"><span class="icon"><i
                 class="fa fa-pencil"></i></span></a>
             </div>
-            <div class="a-home">
-              <a class="button is-primary is-inverted is-outlined"><span class="icon"><i class="fa fa-home"></i></span></a>
+            <div class="home" @click="setWelcome(scene.index)">
+              <a class="button is-primary is-inverted is-outlined"
+                 :class="{'home-selected': scene.index == welcomeSceneIndex}">
+                <span class="icon"><i class="fa fa-home"></i></span>
+              </a>
             </div>
           </div>
         </div>
@@ -86,7 +89,9 @@
         //场景列表
         sceneList: [],
         //当前场景序号
-        currentSceneIndex: 0
+        currentSceneIndex: 0,
+        //欢迎页场景序号
+        welcomeSceneIndex: 0
       }
     },
     methods: {
@@ -99,9 +104,29 @@
         //初始化场景
         this.sceneList = this.krpano.get("scene").getArray()
         this.currentSceneIndex = this.krpano.get("scene").getItem(this.krpano.get("xml.scene")).index
+        this.welcomeSceneIndex = this.krpano.get("scene").getItem(this.krpano.get('startscene')).index
       },
       changeModule(module) {
         this.module = module
+      },
+      changeScene(scene) {
+        if(this.currentSceneIndex == scene.index) return
+        this.currentSceneIndex = scene.index
+        this.krpano.call("loadscene(" + scene.name + ")");
+      },
+      setWelcome(index) {
+        this.welcomeSceneIndex = index
+      },
+      save() {
+        let data = []
+        this.sceneList.forEach((scene)=>{
+          data.push({
+            index: scene.index,
+            name: scene.name,
+            welcomeFlag: scene.index == this.welcomeSceneIndex
+          })
+        })
+        console.log(data)
       }
     }
   }
@@ -268,11 +293,12 @@
       height: 168px;
       width: 168px;
       border: 2px #333333 solid;
+      cursor: pointer;
 
       .scene-name {
         line-height: 36px;
         height: 36px;
-        width: 168px;
+        width: 164px;
         padding-left: 5px;
       }
 
@@ -287,7 +313,8 @@
           color: white !important;
         }
       }
-      .a-pencil {
+
+      .pencil {
         position: relative;
         left: 128px;
         bottom: 128px;
@@ -295,12 +322,20 @@
         width: 36px;
       }
 
-      .a-home {
+      .home {
         position: relative;
         left: 128px;
         bottom: 128px;
         height: 64px;
         width: 36px;
+
+        .home-selected {
+          background-color: #427afb !important;
+        }
+      }
+
+      &:hover {
+        border-color: #fbd14b;
       }
     }
 
