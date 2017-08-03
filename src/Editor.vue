@@ -5,9 +5,10 @@
         <div class="has-text-centered has-text-white func-button" @click="save()">
           <span class="icon is-small"><i class="fa fa-floppy-o"></i></span>
           <span class="func-button-text">保存</span>
+          <div v-show="toSaveFlag" class="to-save"></div>
         </div>
         <div class="line"></div>
-        <div class="has-text-centered has-text-white func-button">
+        <div class="has-text-centered has-text-white func-button" @click="preview()">
           <span class="icon is-small"><i class="fa fa-search"></i></span>
           <span class="func-button-text">预览</span>
         </div>
@@ -86,6 +87,8 @@
         krpano: document.getElementById("krpanoSWFObject"),
         //当前修改模块：0场景；1视角；2热点
         module: 0,
+        //待保存标识
+        toSaveFlag: false,
         //场景列表
         sceneList: [],
         //当前场景序号
@@ -110,16 +113,17 @@
         this.module = module
       },
       changeScene(scene) {
-        if(this.currentSceneIndex == scene.index) return
+        if (this.currentSceneIndex == scene.index) return
         this.currentSceneIndex = scene.index
         this.krpano.call("loadscene(" + scene.name + ")");
       },
       setWelcome(index) {
         this.welcomeSceneIndex = index
+        this.toSaveFlag = true
       },
       save() {
         let data = []
-        this.sceneList.forEach((scene)=>{
+        this.sceneList.forEach((scene) => {
           data.push({
             index: scene.index,
             name: scene.name,
@@ -127,6 +131,10 @@
           })
         })
         console.log(data)
+        this.toSaveFlag = false
+      },
+      preview() {
+        window.open('../static/tour.html')
       }
     }
   }
@@ -136,6 +144,16 @@
 
   #editor {
     width: 100%;
+  }
+
+  .to-save {
+    position: relative;
+    top: -45px;
+    left: 28px;
+    width: 6px;
+    height: 6px;
+    background-color: red;
+    border-radius: 3px;
   }
 
   .line {
