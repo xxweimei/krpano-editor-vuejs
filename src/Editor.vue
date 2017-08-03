@@ -38,7 +38,7 @@
           <h5 class="title is-5 has-text-white scene-title">场景列表</h5>
           <div class="line"></div>
           <div class="scene-item">
-            <div>场景一场景一场景一场景一场景一场景一</div>
+            <div>场景一</div>
             <figure class="image is-128x128">
               <img src="../static/panos/1.tiles/thumb.jpg">
             </figure>
@@ -251,7 +251,7 @@
     }
 
     .scene-item {
-      margin: 5px 15px 15px 15px;
+      margin: 5px 0 20px 10px;
       height: 168px;
       width: 168px;
       div {
@@ -260,12 +260,12 @@
         width: 168px;
       }
       a {
-        border: 0;
         position: relative;
         height: 64px;
         width: 40px;
-        background-color: #3a3a3a;
+        background-color: rgb(70, 70, 70) !important;
         border-radius: 0;
+        border: 0;
         &:hover {
           background-color: #427afb !important;
           color: white !important;
