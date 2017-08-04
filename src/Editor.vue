@@ -38,13 +38,13 @@
         <div class="scene-module has-text-white" v-show="module == 0">
           <h5 class="title is-5 has-text-white scene-title">场景列表</h5>
           <div class="line"></div>
-          <div class="scene-item" v-for="scene in sceneList" @click="changeScene(scene)"
+          <div class="scene-item" v-for="scene in sceneList"
                :class="{'scene-item-selected' : scene.index == currentSceneIndex}">
-            <div class="scene-name">{{scene.name}}</div>
-            <figure class="image is-128x128">
+            <div class="scene-name" @click="changeScene(scene)">{{scene.name}}</div>
+            <figure class="image is-128x128" @click="changeScene(scene)">
               <img src="../static/panos/1.tiles/thumb.jpg">
             </figure>
-            <div class="pencil" @click="">
+            <div class="pencil" @click="showModifySceneName(scene)">
               <a class="button is-primary is-inverted is-outlined"><span class="icon"><i
                 class="fa fa-pencil"></i></span></a>
             </div>
@@ -73,14 +73,27 @@
       <div class="camera-right-bottom"></div>
       <a class="button is-info camera-button">设为初始视角</a>
     </div>
+    <my-dialog :show="showModifySceneNameFlag" title="场景修改" v-on:close="closeModifySceneName">
+      <div class="modify-scene-name">
+        <div class="field">
+          <label class="label">场景名称</label>
+          <p class="control">
+            <input class="input" v-model="toModifyScene.name">
+          </p>
+        </div>
+        <a class="button" :disabled="!sceneNameValid" @click="modifySceneName()">确定</a>
+      </div>
+    </my-dialog>
   </div>
 </template>
 
 <script>
 
+  import MyDialog from './components/MyDialog'
+
   export default {
     name: 'editor',
-    components: {},
+    components: {MyDialog},
     data() {
       return {
         //krpano对象
@@ -94,7 +107,16 @@
         //当前场景序号
         currentSceneIndex: 0,
         //欢迎页场景序号
-        welcomeSceneIndex: 0
+        welcomeSceneIndex: 0,
+        //展示修改场景名称标识
+        showModifySceneNameFlag: false,
+        //待修改场景对象
+        toModifyScene: {}
+      }
+    },
+    computed: {
+      sceneNameValid() {
+        return this.toModifyScene.name && this.toModifyScene.name.length > 0 && this.toModifyScene.name.length < 10
       }
     },
     methods: {
@@ -135,6 +157,40 @@
       },
       preview() {
         window.open('../static/tour.html')
+      },
+      showModifySceneName(scene) {
+        this.toModifyScene = {
+          name: scene.name,
+          index: scene.index
+        }
+        this.showModifySceneNameFlag = true
+      },
+      modifySceneName() {
+        if (!this.sceneNameValid) return
+        //判断是否重复
+        let repeatFlag = false
+        for (let scene of this.sceneList) {
+          if (scene.name == this.toModifyScene.name) {
+            repeatFlag = true
+            break
+          }
+        }
+        if (repeatFlag) {
+          alert('123')
+          return
+        }
+        //修改场景名称（相关联的热点，当前场景scene名称也需修改）
+        let oldName = this.sceneList[this.toModifyScene.index].name.toString()
+        let newName = this.toModifyScene.name.toString()
+        //修改krpano场景对象名称
+        this.krpano.get("scene").renameItem(oldName, newName)
+        this.sceneList[this.toModifyScene.index].name = newName
+        //修改krpano热点指向场景名称
+        //todo
+        this.showModifySceneNameFlag = false
+      },
+      closeModifySceneName() {
+        this.showModifySceneNameFlag = false
       }
     }
   }
@@ -359,6 +415,16 @@
 
     .scene-item-selected {
       border-color: #fbd14b;
+    }
+  }
+
+  .modify-scene-name {
+    padding: 30px;
+    width: 20rem;
+
+    a {
+      margin-top: 20px;
+      width: 100%;
     }
   }
 
