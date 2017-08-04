@@ -157,10 +157,18 @@
       //自动旋转状态变更
       autoSpinFlag(checked) {
         this.krpano.set("autorotate.enabled", checked)
+        this.sceneList[this.currentSceneIndex].autorotate = {
+          enabled: checked,
+          waitTime: this.autoSpinWaitingTime
+        }
       },
       //自动旋转等待时间变更
       autoSpinWaitingTime(val) {
         this.krpano.set("autorotate.waittime", val)
+        this.sceneList[this.currentSceneIndex].autorotate = {
+          enabled: this.autoSpinFlag,
+          waitTime: val
+        }
       }
     },
     methods: {
@@ -200,7 +208,8 @@
           data.push({
             index: scene.index,
             name: scene.name,
-            welcomeFlag: scene.index == this.welcomeSceneIndex
+            welcomeFlag: scene.index == this.welcomeSceneIndex,
+            autorotate: scene.autorotate
           })
         })
         console.log(data)
