@@ -56,6 +56,33 @@
             </div>
           </div>
         </div>
+        <div v-show="module == 1" class="view-module has-text-white">
+          <div class="view-content">
+            <label class="label has-text-white">
+              自动旋转
+              <vb-switch type="info" size="" v-model="autoSpinFlag" class="view-switch"></vb-switch>
+            </label>
+            <label class="label has-text-white">
+              等待时间（秒）
+              <input class="input is-small" :disabled="!autoSpinFlag" v-model="autoSpinWaitingTime">
+            </label>
+          </div>
+          <div class="line"></div>
+          <div class="view-content">
+            <label class="label has-text-white">
+              初始Fov
+              <input class="input is-small">
+            </label>
+            <label class="label has-text-white">
+              最小Fov
+              <input class="input is-small">
+            </label>
+            <label class="label has-text-white">
+              最大Fov
+              <input class="input is-small">
+            </label>
+          </div>
+        </div>
       </div>
     </div>
     <div class="camera" v-show="module == 1">
@@ -91,16 +118,18 @@
 <script>
 
   import MyDialog from './components/MyDialog'
+  import VbSwitch from './components/Switch'
+  import Slider from './components/Slider'
 
   export default {
     name: 'editor',
-    components: {MyDialog},
+    components: {MyDialog, VbSwitch, Slider},
     data() {
       return {
         //krpano对象
         krpano: document.getElementById("krpanoSWFObject"),
         //当前修改模块：0场景；1视角；2热点
-        module: 0,
+        module: 1,
         //待保存标识
         toSaveFlag: false,
         //场景列表
@@ -112,12 +141,26 @@
         //展示修改场景名称标识
         showModifySceneNameFlag: false,
         //待修改场景对象
-        toModifyScene: {}
+        toModifyScene: {},
+        //自动旋转开启标识
+        autoSpinFlag: false,
+        //自动旋转等待时间
+        autoSpinWaitingTime: 0
       }
     },
     computed: {
       sceneNameValid() {
         return this.toModifyScene.name && this.toModifyScene.name.length > 0 && this.toModifyScene.name.length < 10
+      }
+    },
+    watch: {
+      //自动旋转状态变更
+      autoSpinFlag(checked) {
+        this.krpano.set("autorotate.enabled", checked)
+      },
+      //自动旋转等待时间变更
+      autoSpinWaitingTime(val) {
+        this.krpano.set("autorotate.waittime", val)
       }
     },
     methods: {
@@ -131,19 +174,26 @@
         this.sceneList = this.krpano.get("scene").getArray()
         this.currentSceneIndex = this.krpano.get("scene").getItem(this.krpano.get("xml.scene")).index
         this.welcomeSceneIndex = this.krpano.get("scene").getItem(this.krpano.get('startscene')).index
+        //初始化视角参数
+        this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
+        this.autoSpinFlag = this.krpano.get("autorotate.enabled")
       },
+      //切换操作模块
       changeModule(module) {
         this.module = module
       },
+      //切换当前场景
       changeScene(scene) {
         if (this.currentSceneIndex == scene.index) return
         this.currentSceneIndex = scene.index
         this.krpano.call("loadscene(" + scene.name + ")");
       },
+      //设置为home页
       setWelcome(index) {
         this.welcomeSceneIndex = index
         this.toSaveFlag = true
       },
+      //保存
       save() {
         let data = []
         this.sceneList.forEach((scene) => {
@@ -156,9 +206,11 @@
         console.log(data)
         this.toSaveFlag = false
       },
+      //预览
       preview() {
         window.open('../static/tour.html')
       },
+      //显示修改场景弹窗
       showModifySceneName(scene) {
         this.toModifyScene = {
           name: scene.name,
@@ -166,6 +218,7 @@
         }
         this.showModifySceneNameFlag = true
       },
+      //修改场景名称
       modifySceneName() {
         if (!this.sceneNameValid) return
         //判断是否重复
@@ -191,8 +244,13 @@
         this.showModifySceneNameFlag = false
         this.toSaveFlag = true
       },
+      //关闭修改场景弹窗
       closeModifySceneName() {
         this.showModifySceneNameFlag = false
+      },
+      //设为初始视角
+      setDefaultView() {
+
       }
     }
   }
@@ -427,6 +485,33 @@
     a {
       margin-top: 20px;
       width: 100%;
+    }
+  }
+
+  .view-module {
+
+    input {
+      height: 22px;
+      width: 50px;
+      float: right;
+    }
+
+    .view-content {
+      padding: 18px 10px 10px 10px;
+      height: auto;
+
+      .view-switch {
+        float: right;
+      }
+
+      label {
+        font-weight: 100;
+        font-size: 15px;
+        margin-bottom: 15px;
+        &:hover {
+          color: white;
+        }
+      }
     }
   }
 
