@@ -60,11 +60,13 @@
           <div class="view-content">
             <label class="label has-text-white">
               自动旋转
-              <vb-switch type="info" size="" v-model="autoSpinFlag" class="view-switch"></vb-switch>
+              <vb-switch type="info" size="" v-model="autoSpinFlag" class="view-switch"
+                         v-on:input="updatedAutoSpin()"></vb-switch>
             </label>
             <label class="label has-text-white">
               等待时间（秒）
-              <input class="input is-small" :disabled="!autoSpinFlag" v-model="autoSpinWaitingTime">
+              <input class="input is-small" :disabled="!autoSpinFlag" v-model="autoSpinWaitingTime"
+                     @change="updatedAutoSpin()">
             </label>
           </div>
           <div class="line"></div>
@@ -153,24 +155,6 @@
         return this.toModifyScene.name && this.toModifyScene.name.length > 0 && this.toModifyScene.name.length < 10
       }
     },
-    watch: {
-      //自动旋转状态变更
-      autoSpinFlag(checked) {
-        this.krpano.set("autorotate.enabled", checked)
-        this.sceneList[this.currentSceneIndex].autorotate = {
-          enabled: checked,
-          waitTime: this.autoSpinWaitingTime
-        }
-      },
-      //自动旋转等待时间变更
-      autoSpinWaitingTime(val) {
-        this.krpano.set("autorotate.waittime", val)
-        this.sceneList[this.currentSceneIndex].autorotate = {
-          enabled: this.autoSpinFlag,
-          waitTime: val
-        }
-      }
-    },
     methods: {
       //入口js文件已将此函数定义到window，krpano加载完成后调用
       onready() {
@@ -195,6 +179,13 @@
         if (this.currentSceneIndex == scene.index) return
         this.currentSceneIndex = scene.index
         this.krpano.call("loadscene(" + scene.name + ")");
+        let autorotate = this.sceneList[this.currentSceneIndex].autorotate
+        if (autorotate) {
+          this.autoSpinFlag = autorotate.enabled
+          this.autoSpinWaitingTime = autorotate.waitTime
+          this.krpano.set("autorotate.enabled", autorotate.enabled)
+          this.krpano.set("autorotate.waittime", autorotate.waitTime)
+        }
       },
       //设置为home页
       setWelcome(index) {
@@ -260,6 +251,15 @@
       //设为初始视角
       setDefaultView() {
 
+      },
+      //自动旋转变更
+      updatedAutoSpin() {
+        this.krpano.set("autorotate.enabled", this.autoSpinFlag)
+        this.krpano.set("autorotate.waittime", this.autoSpinWaitingTime)
+        this.sceneList[this.currentSceneIndex].autorotate = {
+          enabled: this.autoSpinFlag,
+          waitTime: this.autoSpinWaitingTime
+        }
       }
     }
   }
