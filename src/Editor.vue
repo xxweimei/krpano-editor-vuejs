@@ -81,6 +81,7 @@
             <input class="input" v-model="toModifyScene.name">
           </p>
         </div>
+        <span>场景名称</span>
         <a class="button" :disabled="!sceneNameValid" @click="modifySceneName()">确定</a>
       </div>
     </my-dialog>
@@ -188,6 +189,7 @@
         //修改krpano热点指向场景名称
         //todo
         this.showModifySceneNameFlag = false
+        this.toSaveFlag = true
       },
       closeModifySceneName() {
         this.showModifySceneNameFlag = false
