@@ -72,18 +72,26 @@
           </div>
           <div class="line"></div>
           <div class="view-content">
-            <label class="label has-text-white">
-              初始Fov
-              <input class="input is-small">
-            </label>
-            <label class="label has-text-white">
-              最小Fov
-              <input class="input is-small">
-            </label>
-            <label class="label has-text-white">
-              最大Fov
-              <input class="input is-small">
-            </label>
+            <div class="view-slider">
+              <div class="view-top-slider">
+                <span :style="{ left: 'calc(' + (initFov/1.8) + '% - 6px)'}"><i class="fa fa-map-marker"></i></span>
+              </div>
+              <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']" :dotSize="12"></vue-slider>
+            </div>
+            <div class="columns has-text-centered">
+              <div class="column is-4">
+                <span>最近</span>
+                <input class="input is-small" v-model="minFov" disabled>
+              </div>
+              <div class="column is-4">
+                <span>初始</span>
+                <input class="input is-small" v-model="initFov">
+              </div>
+              <div class="column is-4">
+                <span>最远</span>
+                <input class="input is-small" v-model="maxFov" disabled>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -121,11 +129,11 @@
 <script>
 
   import MyDialog from './components/MyDialog'
-  import Slider from './components/Slider'
+  import VueSlider from 'vue-slider-component'
 
   export default {
     name: 'editor',
-    components: {MyDialog, Slider},
+    components: {MyDialog, VueSlider},
     data() {
       return {
         //krpano对象
@@ -147,12 +155,30 @@
         //自动旋转开启标识
         autoSpinFlag: false,
         //自动旋转等待时间
-        autoSpinWaitingTime: 0
+        autoSpinWaitingTime: 0,
+        //最小fov
+        minFov: 0,
+        //最大fov
+        maxFov: 180,
+        //初始fov
+        initFov: 90
       }
     },
     computed: {
       sceneNameValid() {
         return this.toModifyScene.name && this.toModifyScene.name.length > 0 && this.toModifyScene.name.length < 10
+      },
+      sliderValue: {
+        get: function () {
+          return [
+            this.minFov,
+            this.maxFov
+          ]
+        },
+        set: function (val) {
+          this.minFov = Math.min(val[0], val[1])
+          this.maxFov = Math.max(val[0], val[1])
+        }
       }
     },
     methods: {
@@ -169,6 +195,9 @@
         //初始化视角参数
         this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
         this.autoSpinFlag = this.krpano.get("autorotate.enabled")
+        this.minFov = this.krpano.get("view.fovmin")
+        this.maxFov = this.krpano.get("view.fovmax")
+        this.initFov = this.krpano.get("view.fov")
       },
       //切换操作模块
       changeModule(module) {
@@ -507,26 +536,47 @@
   .view-module {
 
     input {
-      height: 22px;
-      width: 50px;
-      float: right;
+      text-align: center;
     }
 
     .view-content {
-      padding: 18px 10px 10px 10px;
+      margin: 20px 10px 23px 10px;
       height: auto;
 
       .view-switch {
         float: right;
       }
 
+      .view-slider {
+        padding: 35px 0;
+
+        .view-top-slider {
+          margin: 0 6px;
+          position: relative;
+          bottom: 14px;
+
+          span {
+            position: absolute;
+          }
+        }
+      }
+
       label {
         font-weight: 100;
         font-size: 15px;
         margin-bottom: 15px;
+        input {
+          height: 22px;
+          float: right;
+          width: 40px;
+        }
         &:hover {
           color: white;
         }
+      }
+
+      span {
+        font-size: 12px;
       }
     }
   }
@@ -540,7 +590,6 @@
       width: 100%;
       height: 100%;
       position: absolute;
-      z-index: 1;
       cursor: pointer;
     }
 
