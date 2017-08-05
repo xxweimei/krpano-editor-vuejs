@@ -74,7 +74,7 @@
           <div class="view-content">
             <div class="view-slider">
               <div class="view-top-slider">
-                <span :style="{ left: 'calc(' + (initFov/1.8) + '% - 6px)'}"
+                <span :style="{ left: 'calc(' + (initFov/1.8) + '% - 6px)'}" @mouseout="stopMoveInitFov()"
                       @mousedown="startMoveInitFov()" @mousemove="moveInitFov()" @mouseup="stopMoveInitFov()"
                 ><i class="fa fa-map-marker"></i></span>
               </div>
@@ -139,7 +139,7 @@
     data() {
       return {
         //krpano对象
-        krpano: document.getElementById("krpanoSWFObject"),
+        krpano: document.querySelector("#krpanoSWFObject"),
         //当前修改模块：0场景；1视角；2热点
         module: 1,
         //待保存标识
@@ -165,13 +165,17 @@
         //初始fov
         initFov: 90,
         //初始fov移动条移动开关
-        initFovMoveFlag: false
+        initFovMoveFlag: false,
+        //鼠标相对于浏览器窗口X轴坐标
+        mouseClientX: 0
       }
     },
     computed: {
+      //场景名称校验
       sceneNameValid() {
         return this.toModifyScene.name && this.toModifyScene.name.length > 0 && this.toModifyScene.name.length < 10
       },
+      //视角拖动条范围值
       sliderValue: {
         get: function () {
           return [
@@ -305,12 +309,13 @@
       //视角条拖动
       moveInitFov() {
         if (this.initFovMoveFlag) {
-          console.log(123)
-
+//          this.initFov += window.event.clientX - this.mouseClientX
+          this.mouseClientX = window.event.clientX
         }
       },
       startMoveInitFov() {
         this.initFovMoveFlag = true
+        this.mouseClientX = window.event.clientX
       },
       stopMoveInitFov() {
         this.initFovMoveFlag = false
