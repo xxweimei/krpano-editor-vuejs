@@ -311,8 +311,8 @@
         if (this.initFovMoveFlag) {
           let sliderWidth = document.querySelector('.view-top-slider').clientWidth
           let newInitFov = this.initFov + (window.event.clientX - this.mouseClientX) / sliderWidth * 180
-          newInitFov = Number.parseInt(newInitFov.toFixed(0))
-          if(newInitFov >= this.minFov && newInitFov <= this.maxFov){
+          let intFov = Number.parseInt(newInitFov.toFixed(0))
+          if(intFov >= this.minFov && intFov <= this.maxFov){
             this.initFov = newInitFov
             this.mouseClientX = window.event.clientX
           }
@@ -613,6 +613,8 @@
       }
 
       span {
+        width: 20px;
+        cursor: pointer;
         user-select: none;
         font-size: 12px;
       }
