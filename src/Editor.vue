@@ -74,7 +74,9 @@
           <div class="view-content">
             <div class="view-slider">
               <div class="view-top-slider">
-                <span :style="{ left: 'calc(' + (initFov/1.8) + '% - 6px)'}"><i class="fa fa-map-marker"></i></span>
+                <span :style="{ left: 'calc(' + (initFov/1.8) + '% - 6px)'}"
+                      @mousedown="startMoveInitFov()" @mousemove="moveInitFov()" @mouseup="stopMoveInitFov()"
+                ><i class="fa fa-map-marker"></i></span>
               </div>
               <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']" :dotSize="12"></vue-slider>
             </div>
@@ -85,7 +87,7 @@
               </div>
               <div class="column is-4">
                 <span>初始</span>
-                <input class="input is-small" v-model="initFov">
+                <input class="input is-small" v-model="initFov" disabled>
               </div>
               <div class="column is-4">
                 <span>最远</span>
@@ -161,7 +163,9 @@
         //最大fov
         maxFov: 180,
         //初始fov
-        initFov: 90
+        initFov: 90,
+        //初始fov移动条移动开关
+        initFovMoveFlag: false
       }
     },
     computed: {
@@ -178,6 +182,8 @@
         set: function (val) {
           this.minFov = Math.min(val[0], val[1])
           this.maxFov = Math.max(val[0], val[1])
+          this.krpano.set("view.fovmin", this.minFov)
+          this.krpano.set("view.fovmax", this.maxFov)
         }
       }
     },
@@ -295,6 +301,19 @@
           waitTime: Number(this.autoSpinWaitingTime)
         }
         this.toSaveFlag = true
+      },
+      //视角条拖动
+      moveInitFov() {
+        if (this.initFovMoveFlag) {
+          console.log(123)
+
+        }
+      },
+      startMoveInitFov() {
+        this.initFovMoveFlag = true
+      },
+      stopMoveInitFov() {
+        this.initFovMoveFlag = false
       }
     }
   }
@@ -322,10 +341,12 @@
     height: 0;
     border-top: solid black 1px;
     border-bottom: solid 1px #4b4b4b;
+    user-select: none;
   }
 
   .func-div {
     border-right: solid 1px black;
+    user-select: none;
 
     .func-button {
       cursor: pointer;
@@ -344,6 +365,8 @@
   }
 
   .camera {
+    user-select: none;
+
     .camera-button {
       position: absolute;
       left: 42%;
@@ -461,6 +484,8 @@
   }
 
   .scene-module {
+    user-select: none;
+
     .scene-title {
       line-height: 50px;
       padding-left: 10px;
@@ -548,7 +573,7 @@
       }
 
       .view-slider {
-        padding: 35px 0;
+        padding: 20px 0 35px 0;
 
         .view-top-slider {
           margin: 0 6px;
@@ -576,6 +601,7 @@
       }
 
       span {
+        user-select: none;
         font-size: 12px;
       }
     }
