@@ -185,7 +185,11 @@
           this.autoSpinWaitingTime = autorotate.waitTime
           this.krpano.set("autorotate.enabled", autorotate.enabled)
           this.krpano.set("autorotate.waittime", autorotate.waitTime)
+        }else{
+          this.autoSpinFlag = this.krpano.get("autorotate.enabled")
+          this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
         }
+        if(this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
       },
       //设置为home页
       setWelcome(index) {
@@ -256,10 +260,12 @@
       updatedAutoSpin() {
         this.krpano.set("autorotate.enabled", this.autoSpinFlag)
         this.krpano.set("autorotate.waittime", this.autoSpinWaitingTime)
+        if(this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
         this.sceneList[this.currentSceneIndex].autorotate = {
           enabled: this.autoSpinFlag,
-          waitTime: this.autoSpinWaitingTime
+          waitTime: Number(this.autoSpinWaitingTime)
         }
+        this.toSaveFlag = true
       }
     }
   }
