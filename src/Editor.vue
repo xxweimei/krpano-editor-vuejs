@@ -74,7 +74,7 @@
           <div class="view-content">
             <div class="view-slider">
               <div class="view-top-slider">
-                <span :style="{ left: 'calc(' + (initFov/1.8) + '% - 6px)'}" @mouseout="stopMoveInitFov()"
+                <span :style="{ left: (initFov/1.8) + '%'}" @mouseout="stopMoveInitFov()"
                       @mousedown="startMoveInitFov()" @mousemove="moveInitFov()" @mouseup="stopMoveInitFov()"
                 ><i class="fa fa-map-marker"></i></span>
               </div>
@@ -309,8 +309,13 @@
       //视角条拖动
       moveInitFov() {
         if (this.initFovMoveFlag) {
-//          this.initFov += window.event.clientX - this.mouseClientX
-          this.mouseClientX = window.event.clientX
+          let sliderWidth = document.querySelector('.view-top-slider').clientWidth
+          let newInitFov = this.initFov + (window.event.clientX - this.mouseClientX) / sliderWidth * 180
+          newInitFov = Number.parseInt(newInitFov.toFixed(0))
+          if(newInitFov >= this.minFov && newInitFov <= this.maxFov){
+            this.initFov = newInitFov
+            this.mouseClientX = window.event.clientX
+          }
         }
       },
       startMoveInitFov() {
@@ -584,9 +589,11 @@
           margin: 0 6px;
           position: relative;
           bottom: 14px;
+          text-align: center;
 
           span {
             position: absolute;
+            transform: translateX(-50%);
           }
         }
       }
