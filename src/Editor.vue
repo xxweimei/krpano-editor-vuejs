@@ -60,8 +60,9 @@
           <div class="view-content">
             <label class="label has-text-white">
               自动旋转
-              <vb-switch type="info" size="" v-model="autoSpinFlag" class="view-switch"
-                         v-on:input="updatedAutoSpin()"></vb-switch>
+              <label class="switch is-info view-switch" :class="{'switch-checked':autoSpinFlag}">
+                <input type="checkbox" v-model="autoSpinFlag" @change="updatedAutoSpin()">
+              </label>
             </label>
             <label class="label has-text-white">
               等待时间（秒）
@@ -120,12 +121,11 @@
 <script>
 
   import MyDialog from './components/MyDialog'
-  import VbSwitch from './components/Switch'
   import Slider from './components/Slider'
 
   export default {
     name: 'editor',
-    components: {MyDialog, VbSwitch, Slider},
+    components: {MyDialog, Slider},
     data() {
       return {
         //krpano对象
@@ -185,11 +185,11 @@
           this.autoSpinWaitingTime = autorotate.waitTime
           this.krpano.set("autorotate.enabled", autorotate.enabled)
           this.krpano.set("autorotate.waittime", autorotate.waitTime)
-        }else{
+        } else {
           this.autoSpinFlag = this.krpano.get("autorotate.enabled")
           this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
         }
-        if(this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
+        if (this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
       },
       //设置为home页
       setWelcome(index) {
@@ -260,7 +260,7 @@
       updatedAutoSpin() {
         this.krpano.set("autorotate.enabled", this.autoSpinFlag)
         this.krpano.set("autorotate.waittime", this.autoSpinWaitingTime)
-        if(this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
+        if (this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
         this.sceneList[this.currentSceneIndex].autorotate = {
           enabled: this.autoSpinFlag,
           waitTime: Number(this.autoSpinWaitingTime)
@@ -272,6 +272,7 @@
 </script>
 
 <style lang="scss" scoped>
+  @import '~bulma/sass/utilities/variables';
 
   #editor {
     width: 100%;
@@ -527,6 +528,61 @@
           color: white;
         }
       }
+    }
+  }
+
+  .switch {
+    --height: 22px;
+
+    input {
+      opacity: 0;
+      display: inline-block;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 1;
+      cursor: pointer;
+    }
+
+    position: relative;
+    border-radius: calc(0.8 * var(--height));
+    width: calc(1.625 * var(--height));
+    height: var(--height);
+    background-color: $border;
+    border: 1px solid $border;
+    cursor: pointer;
+
+    &:before,
+    &:after {
+      content: " ";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: calc(var(--height) - 2px);
+      border-radius: calc((var(--height) - 2px) / 2);
+      transition: .233s;
+    }
+
+    &:before {
+      width: calc(1.625 * var(--height) - 2px);
+      background-color: $grey-lighter;
+    }
+
+    &:after {
+      width: calc(var(--height) - 2px);
+      background-color: #FFF;
+      box-shadow: 0 2px 3px rgba(17, 17, 17, 0.1);
+    }
+  }
+
+  .switch-checked {
+    border-color: $info;
+    background-color: $info;
+    &:before {
+      transform: scale(0);
+    }
+    &:after {
+      transform: translateX(calc(0.625 * var(--height)));
     }
   }
 
