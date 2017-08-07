@@ -105,6 +105,9 @@
             <div class="hotspot-item">
 
             </div>
+            <div class="hotspot-item">
+
+            </div>
           </div>
         </div>
       </div>
@@ -745,6 +748,16 @@
 
       a {
         width: 100%;
+      }
+    }
+
+    .hotspot-list {
+      padding: 10px 0;
+
+      .hotspot-item {
+        margin: 10px 0;
+        height: 40px;
+        background-color: #3a3a3a;
       }
     }
   }
