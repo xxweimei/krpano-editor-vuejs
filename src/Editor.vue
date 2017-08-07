@@ -75,7 +75,7 @@
             <div class="view-slider">
               <div class="view-top-slider" @mousedown="startMoveInitFov()" @mousemove="moveInitFov()"
                    @mouseup="stopMoveInitFov()" @mouseout="stopMoveInitFov()">
-                <span :style="{ left: initFovLeft}"><i class="fa fa-map-marker"></i></span>
+                <span :style="{ left: initFovLeft + 'px'}"><i class="fa fa-map-marker"></i></span>
               </div>
               <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']"
                           :dotSize="12" :show="module == 1"></vue-slider>
@@ -173,8 +173,6 @@
         maxFov: 180,
         //初始fov
         initFov: 90,
-        //视角拖动条上组件左偏移量
-        initFovLeft: '50%',
         //初始fov移动条移动开关
         initFovMoveFlag: false,
         //鼠标相对于浏览器窗口X轴坐标
@@ -212,6 +210,17 @@
           this.minFov = min
           this.maxFov = max
         }
+      },
+      //视角拖动条上组件左偏移量
+      initFovLeft: {
+        get: function () {
+          let sliderWidth = document.querySelector('#editor').clientWidth * 5 / 6 - 32
+          return this.initFov * sliderWidth / 180
+        },
+        set: function (val) {
+          let sliderWidth = document.querySelector('#editor').clientWidth * 5 / 6 - 32
+          this.initFov = Math.round(val * 180 / sliderWidth)
+        }
       }
     },
     methods: {
@@ -231,7 +240,6 @@
         this.minFov = this.krpano.get('view.fovmin')
         this.maxFov = this.krpano.get('view.fovmax')
         this.initFov = this.krpano.get('view.fov')
-        this.initFovLeft = (this.initFov * document.querySelector('.view-top-slider').clientWidth / 180) + 'px'
       },
       //切换操作模块
       changeModule(module) {
@@ -255,15 +263,14 @@
         }
         if (this.autoSpinFlag) this.krpano.get('autorotate').interrupt()
         //加载视角数据
-        this.minFov = currentScene.fovmin
-        this.maxFov = currentScene.fovmax
-        this.initFov = currentScene.fov
-        this.initFovLeft = (currentScene.fov * document.querySelector('.view-top-slider').clientWidth / 180) + 'px'
         if (currentScene.initH) this.krpano.set('view.hlookat', currentScene.initH)
         if (currentScene.initV) this.krpano.set('view.vlookat', currentScene.initV)
         if (currentScene.fovmax) this.krpano.set('view.fovmax', currentScene.fovmax)
+        this.maxFov = this.krpano.get('view.fovmax')
         if (currentScene.fovmin) this.krpano.set('view.fovmin', currentScene.fovmin)
+        this.minFov = this.krpano.get('view.fovmin')
         if (currentScene.fov) this.krpano.set('view.fov', currentScene.fov)
+        this.initFov = this.krpano.get('view.fov')
       },
       //设置为home页
       setWelcome(index) {
@@ -278,7 +285,10 @@
             index: scene.index,
             name: scene.name,
             welcomeFlag: scene.index == this.welcomeSceneIndex,
-            autorotate: scene.autorotate
+            autorotate: scene.autorotate ? scene.autorotate : null,
+            fov: scene.fov ? scene.fov : null,
+            fovmax: scene.fovmax ? scene.fovmax : null,
+            fovmin: scene.fovmin ? scene.fovmin : null
           })
         })
         console.log(data)
@@ -329,7 +339,6 @@
       //设为初始视角
       setDefaultView() {
         let fov = Math.round(this.krpano.get('view.fov'))
-        this.initFovLeft = (fov * document.querySelector('.view-top-slider').clientWidth / 180) + 'px'
         this.initFov = fov
         this.sceneList[this.currentSceneIndex].fov = fov
         this.sceneList[this.currentSceneIndex].initH = this.krpano.get('view.hlookat')
@@ -357,8 +366,7 @@
           } else if (left > Math.round(this.maxFov * slider.clientWidth / 180)) {
             left = Math.round(this.maxFov * slider.clientWidth / 180)
           }
-          this.initFovLeft = left + 'px'
-          this.initFov = Math.round(left * 180 / slider.clientWidth)
+          this.initFovLeft = left
           this.krpano.set('view.fov', this.initFov)
           this.sceneList[this.currentSceneIndex].fov = this.initFov
           this.mouseClientX = window.event.clientX
