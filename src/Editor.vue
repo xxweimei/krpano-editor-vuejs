@@ -185,10 +185,22 @@
           ]
         },
         set: function (val) {
-          this.minFov = Math.min(val[0], val[1])
-          this.maxFov = Math.max(val[0], val[1])
-          this.krpano.set("view.fovmin", this.minFov)
-          this.krpano.set("view.fovmax", this.maxFov)
+          let min = Math.min(val[0], val[1])
+          let max = Math.max(val[0], val[1])
+          if (this.sceneList[this.currentSceneIndex]) {
+            if (this.krpano.get("view.fovmin") != min) {
+              this.krpano.set("view.fovmin", min)
+              this.sceneList[this.currentSceneIndex].fovmin = min
+              this.toSaveFlag = true
+            }
+            if (this.krpano.get("view.fovmax") != max) {
+              this.krpano.set("view.fovmax", max)
+              this.sceneList[this.currentSceneIndex].fovmax = max
+              this.toSaveFlag = true
+            }
+          }
+          this.minFov = min
+          this.maxFov = max
         }
       }
     },
@@ -319,7 +331,10 @@
           }
           this.initFovLeft = left + 'px'
           this.initFov = Math.round(left * slider.clientWidth / 180)
+          this.krpano.set("view.fov", this.initFov)
+          this.sceneList[this.currentSceneIndex].fov = this.initFov
           this.mouseClientX = window.event.clientX
+          this.toSaveFlag = true
         }
       },
       startMoveInitFov() {
