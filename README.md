@@ -1,6 +1,6 @@
 # krpano-editor-vuejs
 
-> 刚开始，不定期施工，工期未知
+> 场景，视角模块已完成，热点模块不定期施工
 
 ## Build Setup
 
