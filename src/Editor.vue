@@ -110,7 +110,7 @@
       <div class="camera-bottom-left"></div>
       <div class="camera-bottom-right"></div>
       <div class="camera-right-bottom"></div>
-      <a class="button is-info camera-button">设为初始视角</a>
+      <a class="button is-info camera-button" @click="setDefaultView()">设为初始视角</a>
     </div>
     <my-dialog :show="showModifySceneNameFlag" title="场景修改" v-on:close="closeModifySceneName">
       <div class="modify-scene-name">
@@ -306,7 +306,12 @@
       },
       //设为初始视角
       setDefaultView() {
-
+        let fov = Math.round(this.krpano.get("view.fov"))
+        let slider = document.querySelector('.view-top-slider')
+        this.initFovLeft = (fov * slider.clientWidth / 180) + 'px'
+        this.initFov = fov
+        this.sceneList[this.currentSceneIndex].fov = fov
+        this.toSaveFlag = true
       },
       //自动旋转变更
       updatedAutoSpin() {
@@ -602,7 +607,7 @@
       }
 
       .view-slider {
-        padding: 20px 0 35px 0;
+        padding-bottom: 35px;
 
         .view-top-slider {
           margin: 0 6px;
