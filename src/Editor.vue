@@ -148,7 +148,7 @@
     data() {
       return {
         //krpano对象
-        krpano: document.querySelector("#krpanoSWFObject"),
+        krpano: document.querySelector('#krpanoSWFObject'),
         //当前修改模块：0场景；1视角；2热点
         module: 2,
         //待保存标识
@@ -198,13 +198,13 @@
           let min = Math.min(val[0], val[1])
           let max = Math.max(val[0], val[1])
           if (this.sceneList[this.currentSceneIndex]) {
-            if (this.krpano.get("view.fovmin") != min) {
-              this.krpano.set("view.fovmin", min)
+            if (this.krpano.get('view.fovmin') != min) {
+              this.krpano.set('view.fovmin', min)
               this.sceneList[this.currentSceneIndex].fovmin = min
               this.toSaveFlag = true
             }
-            if (this.krpano.get("view.fovmax") != max) {
-              this.krpano.set("view.fovmax", max)
+            if (this.krpano.get('view.fovmax') != max) {
+              this.krpano.set('view.fovmax', max)
               this.sceneList[this.currentSceneIndex].fovmax = max
               this.toSaveFlag = true
             }
@@ -218,19 +218,19 @@
       //入口js文件已将此函数定义到window，krpano加载完成后调用
       onready() {
         //隐藏下方自带控制条
-        this.krpano.set("layer[skin_control_bar].visible", false);
-        this.krpano.set("layer[skin_splitter_bottom].visible", false);
-        this.krpano.set("layer[skin_scroll_window].visible", false);
+        this.krpano.set('layer[skin_control_bar].visible', false);
+        this.krpano.set('layer[skin_splitter_bottom].visible', false);
+        this.krpano.set('layer[skin_scroll_window].visible', false);
         //初始化场景
-        this.sceneList = this.krpano.get("scene").getArray()
-        this.currentSceneIndex = this.krpano.get("scene").getItem(this.krpano.get("xml.scene")).index
-        this.welcomeSceneIndex = this.krpano.get("scene").getItem(this.krpano.get('startscene')).index
+        this.sceneList = this.krpano.get('scene').getArray()
+        this.currentSceneIndex = this.krpano.get('scene').getItem(this.krpano.get('xml.scene')).index
+        this.welcomeSceneIndex = this.krpano.get('scene').getItem(this.krpano.get('startscene')).index
         //初始化视角参数
-        this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
-        this.autoSpinFlag = this.krpano.get("autorotate.enabled")
-        this.minFov = this.krpano.get("view.fovmin")
-        this.maxFov = this.krpano.get("view.fovmax")
-        this.initFov = this.krpano.get("view.fov")
+        this.autoSpinWaitingTime = this.krpano.get('autorotate.waittime')
+        this.autoSpinFlag = this.krpano.get('autorotate.enabled')
+        this.minFov = this.krpano.get('view.fovmin')
+        this.maxFov = this.krpano.get('view.fovmax')
+        this.initFov = this.krpano.get('view.fov')
       },
       //切换操作模块
       changeModule(module) {
@@ -240,21 +240,20 @@
       changeScene(scene) {
         if (this.currentSceneIndex == scene.index) return
         this.currentSceneIndex = scene.index
-        this.krpano.call("loadscene(" + scene.name + ")");
+        this.krpano.call('loadscene(' + scene.name + ')');
         //加载自动旋转数据
         let autorotate = this.sceneList[this.currentSceneIndex].autorotate
         if (autorotate) {
           this.autoSpinFlag = autorotate.enabled
           this.autoSpinWaitingTime = autorotate.waitTime
-          this.krpano.set("autorotate.enabled", autorotate.enabled)
-          this.krpano.set("autorotate.waittime", autorotate.waitTime)
+          this.krpano.set('autorotate.enabled', autorotate.enabled)
+          this.krpano.set('autorotate.waittime', autorotate.waitTime)
         } else {
-          this.autoSpinFlag = this.krpano.get("autorotate.enabled")
-          this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
+          this.autoSpinFlag = this.krpano.get('autorotate.enabled')
+          this.autoSpinWaitingTime = this.krpano.get('autorotate.waittime')
         }
-        if (this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
+        if (this.autoSpinFlag) this.krpano.get('autorotate').interrupt()
         //加载视角数据
-
       },
       //设置为home页
       setWelcome(index) {
@@ -306,7 +305,7 @@
         let oldName = this.sceneList[this.toModifyScene.index].name.toString()
         let newName = this.toModifyScene.name.toString()
         //修改krpano场景对象名称
-        this.krpano.get("scene").renameItem(oldName, newName)
+        this.krpano.get('scene').renameItem(oldName, newName)
         this.sceneList[this.toModifyScene.index].name = newName
         //修改krpano热点指向场景名称
         //todo
@@ -319,18 +318,20 @@
       },
       //设为初始视角
       setDefaultView() {
-        let fov = Math.round(this.krpano.get("view.fov"))
+        let fov = Math.round(this.krpano.get('view.fov'))
         let slider = document.querySelector('.view-top-slider')
         this.initFovLeft = (fov * slider.clientWidth / 180) + 'px'
         this.initFov = fov
         this.sceneList[this.currentSceneIndex].fov = fov
+        this.sceneList[this.currentSceneIndex].initH = this.krpano.get('view.hlookat')
+        this.sceneList[this.currentSceneIndex].initV = this.krpano.get('view.vlookat')
         this.toSaveFlag = true
       },
       //自动旋转变更
       updatedAutoSpin() {
-        this.krpano.set("autorotate.enabled", this.autoSpinFlag)
-        this.krpano.set("autorotate.waittime", this.autoSpinWaitingTime)
-        if (this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
+        this.krpano.set('autorotate.enabled', this.autoSpinFlag)
+        this.krpano.set('autorotate.waittime', this.autoSpinWaitingTime)
+        if (this.autoSpinFlag) this.krpano.get('autorotate').interrupt()
         this.sceneList[this.currentSceneIndex].autorotate = {
           enabled: this.autoSpinFlag,
           waitTime: Number(this.autoSpinWaitingTime)
@@ -349,7 +350,7 @@
           }
           this.initFovLeft = left + 'px'
           this.initFov = Math.round(left * slider.clientWidth / 180)
-          this.krpano.set("view.fov", this.initFov)
+          this.krpano.set('view.fov', this.initFov)
           this.sceneList[this.currentSceneIndex].fov = this.initFov
           this.mouseClientX = window.event.clientX
           this.toSaveFlag = true
