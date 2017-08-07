@@ -56,7 +56,7 @@
             </div>
           </div>
         </div>
-        <div v-show="module == 1" class="view-module has-text-white">
+        <div class="view-module has-text-white" v-show="module == 1">
           <div class="view-content">
             <label class="label has-text-white">
               自动旋转
@@ -94,6 +94,15 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="hotspot-module" v-show="module == 2">
+          <div class="hotspot-list">
+            <div>
+              <a class="button"></a>
+            </div>
+            <div class="line"></div>
+          </div>
+          <div class="hotspot-detail"></div>
         </div>
       </div>
     </div>
@@ -140,7 +149,7 @@
         //krpano对象
         krpano: document.querySelector("#krpanoSWFObject"),
         //当前修改模块：0场景；1视角；2热点
-        module: 1,
+        module: 2,
         //待保存标识
         toSaveFlag: false,
         //场景列表
@@ -231,6 +240,7 @@
         if (this.currentSceneIndex == scene.index) return
         this.currentSceneIndex = scene.index
         this.krpano.call("loadscene(" + scene.name + ")");
+        //加载自动旋转数据
         let autorotate = this.sceneList[this.currentSceneIndex].autorotate
         if (autorotate) {
           this.autoSpinFlag = autorotate.enabled
@@ -242,6 +252,8 @@
           this.autoSpinWaitingTime = this.krpano.get("autorotate.waittime")
         }
         if (this.autoSpinFlag) this.krpano.get("autorotate").interrupt()
+        //加载视角数据
+
       },
       //设置为home页
       setWelcome(index) {
@@ -698,6 +710,12 @@
     }
     &:after {
       transform: translateX(calc(0.625 * var(--height)));
+    }
+  }
+
+  .hotspot-module {
+    div {
+      height: auto;
     }
   }
 
