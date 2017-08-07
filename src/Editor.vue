@@ -231,6 +231,7 @@
         this.minFov = this.krpano.get('view.fovmin')
         this.maxFov = this.krpano.get('view.fovmax')
         this.initFov = this.krpano.get('view.fov')
+        this.initFovLeft = (this.initFov * document.querySelector('.view-top-slider').clientWidth / 180) + 'px'
       },
       //切换操作模块
       changeModule(module) {
@@ -241,19 +242,28 @@
         if (this.currentSceneIndex == scene.index) return
         this.currentSceneIndex = scene.index
         this.krpano.call('loadscene(' + scene.name + ')');
+        let currentScene = this.sceneList[this.currentSceneIndex]
         //加载自动旋转数据
-        let autorotate = this.sceneList[this.currentSceneIndex].autorotate
-        if (autorotate) {
-          this.autoSpinFlag = autorotate.enabled
-          this.autoSpinWaitingTime = autorotate.waitTime
-          this.krpano.set('autorotate.enabled', autorotate.enabled)
-          this.krpano.set('autorotate.waittime', autorotate.waitTime)
+        if (currentScene.autorotate) {
+          this.autoSpinFlag = currentScene.autorotate.enabled
+          this.autoSpinWaitingTime = currentScene.autorotate.waitTime
+          this.krpano.set('autorotate.enabled', currentScene.autorotate.enabled)
+          this.krpano.set('autorotate.waittime', currentScene.autorotate.waitTime)
         } else {
           this.autoSpinFlag = this.krpano.get('autorotate.enabled')
           this.autoSpinWaitingTime = this.krpano.get('autorotate.waittime')
         }
         if (this.autoSpinFlag) this.krpano.get('autorotate').interrupt()
         //加载视角数据
+        this.minFov = currentScene.fovmin
+        this.maxFov = currentScene.fovmax
+        this.initFov = currentScene.fov
+        this.initFovLeft = (currentScene.fov * document.querySelector('.view-top-slider').clientWidth / 180) + 'px'
+        if (currentScene.initH) this.krpano.set('view.hlookat', currentScene.initH)
+        if (currentScene.initV) this.krpano.set('view.vlookat', currentScene.initV)
+        if (currentScene.fovmax) this.krpano.set('view.fovmax', currentScene.fovmax)
+        if (currentScene.fovmin) this.krpano.set('view.fovmin', currentScene.fovmin)
+        if (currentScene.fov) this.krpano.set('view.fov', currentScene.fov)
       },
       //设置为home页
       setWelcome(index) {
@@ -319,8 +329,7 @@
       //设为初始视角
       setDefaultView() {
         let fov = Math.round(this.krpano.get('view.fov'))
-        let slider = document.querySelector('.view-top-slider')
-        this.initFovLeft = (fov * slider.clientWidth / 180) + 'px'
+        this.initFovLeft = (fov * document.querySelector('.view-top-slider').clientWidth / 180) + 'px'
         this.initFov = fov
         this.sceneList[this.currentSceneIndex].fov = fov
         this.sceneList[this.currentSceneIndex].initH = this.krpano.get('view.hlookat')
@@ -349,7 +358,7 @@
             left = Math.round(this.maxFov * slider.clientWidth / 180)
           }
           this.initFovLeft = left + 'px'
-          this.initFov = Math.round(left * slider.clientWidth / 180)
+          this.initFov = Math.round(left * 180 / slider.clientWidth)
           this.krpano.set('view.fov', this.initFov)
           this.sceneList[this.currentSceneIndex].fov = this.initFov
           this.mouseClientX = window.event.clientX
