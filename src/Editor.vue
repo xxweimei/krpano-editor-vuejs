@@ -73,10 +73,9 @@
           <div class="line"></div>
           <div class="view-content">
             <div class="view-slider">
-              <div class="view-top-slider">
-                <span :style="{ left: (initFov/1.8) + '%'}" @mouseout="stopMoveInitFov()"
-                      @mousedown="startMoveInitFov()" @mousemove="moveInitFov()" @mouseup="stopMoveInitFov()"
-                ><i class="fa fa-map-marker"></i></span>
+              <div class="view-top-slider" @mousedown="startMoveInitFov()" @mousemove="moveInitFov()"
+                   @mouseup="stopMoveInitFov()" @mouseout="stopMoveInitFov()">
+                <span :style="{ left: initFovLeft}"><i class="fa fa-map-marker"></i></span>
               </div>
               <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']" :dotSize="12"></vue-slider>
             </div>
@@ -164,6 +163,8 @@
         maxFov: 180,
         //初始fov
         initFov: 90,
+        //视角拖动条上组件左偏移量
+        initFovLeft: '50%',
         //初始fov移动条移动开关
         initFovMoveFlag: false,
         //鼠标相对于浏览器窗口X轴坐标
@@ -309,18 +310,21 @@
       //视角条拖动
       moveInitFov() {
         if (this.initFovMoveFlag) {
-          let sliderWidth = document.querySelector('.view-top-slider').clientWidth
-          let newInitFov = this.initFov + (window.event.clientX - this.mouseClientX) / sliderWidth * 180
-          let intFov = Number.parseInt(newInitFov.toFixed(0))
-          if(intFov >= this.minFov && intFov <= this.maxFov){
-            this.initFov = newInitFov
-            this.mouseClientX = window.event.clientX
+          let slider = document.querySelector('.view-top-slider')
+          let left = window.event.clientX - slider.offsetLeft
+          if (left < Math.round(this.minFov * slider.clientWidth / 180)) {
+            left = Math.round(this.minFov * slider.clientWidth / 180)
+          } else if (left > Math.round(this.maxFov * slider.clientWidth / 180)) {
+            left = Math.round(this.maxFov * slider.clientWidth / 180)
           }
+          this.initFovLeft = left + 'px'
+          this.initFov = Math.round(left * slider.clientWidth / 180)
+          this.mouseClientX = window.event.clientX
         }
       },
       startMoveInitFov() {
         this.initFovMoveFlag = true
-        this.mouseClientX = window.event.clientX
+        this.moveInitFov()
       },
       stopMoveInitFov() {
         this.initFovMoveFlag = false
@@ -588,8 +592,10 @@
         .view-top-slider {
           margin: 0 6px;
           position: relative;
-          bottom: 14px;
+          bottom: -7px;
           text-align: center;
+          height: 21px;
+          user-select: none;
 
           span {
             position: absolute;
