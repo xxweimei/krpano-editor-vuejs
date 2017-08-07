@@ -77,7 +77,8 @@
                    @mouseup="stopMoveInitFov()" @mouseout="stopMoveInitFov()">
                 <span :style="{ left: initFovLeft}"><i class="fa fa-map-marker"></i></span>
               </div>
-              <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']" :dotSize="12"></vue-slider>
+              <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']"
+                          :dotSize="12" :show="module == 1"></vue-slider>
             </div>
             <div class="columns has-text-centered">
               <div class="column is-4">
