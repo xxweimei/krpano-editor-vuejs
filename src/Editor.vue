@@ -103,7 +103,14 @@
           <div class="line"></div>
           <div class="hotspot-list">
             <div class="hotspot-item">
-
+              <div>
+                <figure class="image is-32x32">
+                  <img src="http://bulma.io/images/placeholders/128x128.png">
+                </figure>
+              </div>
+              <div>
+                场景切换
+              </div>
             </div>
             <div class="hotspot-item">
 
@@ -744,10 +751,11 @@
     }
 
     .hotspot-add {
-      padding: 12px 15px 11px 15px;
+      padding: 10px 15px 10px 15px;
 
       a {
         width: 100%;
+        height: 30px;
       }
     }
 
@@ -757,7 +765,13 @@
       .hotspot-item {
         margin: 10px 0;
         height: 40px;
+        padding: 4px 0 4px 10px;
         background-color: #3a3a3a;
+        div {
+          float: left;
+          line-height: 32px;
+          color: white;
+        }
       }
     }
   }
