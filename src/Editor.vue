@@ -97,13 +97,15 @@
           </div>
         </div>
         <div class="hotspot-module" v-show="module == 2">
-          <div class="hotspot-list">
-            <div>
-              <a class="button"></a>
-            </div>
-            <div class="line"></div>
+          <div class="hotspot-add">
+            <a class="button is-small is-info">添加热点</a>
           </div>
-          <div class="hotspot-detail"></div>
+          <div class="line"></div>
+          <div class="hotspot-list">
+            <div class="hotspot-item">
+
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -134,6 +136,7 @@
         <a class="button" :disabled="!sceneNameValid" @click="modifySceneName()">确定</a>
       </div>
     </my-dialog>
+    <div class="hotspot-detail" v-show="false"></div>
   </div>
 </template>
 
@@ -735,6 +738,14 @@
   .hotspot-module {
     div {
       height: auto;
+    }
+
+    .hotspot-add {
+      padding: 12px 15px 11px 15px;
+
+      a {
+        width: 100%;
+      }
     }
   }
 
