@@ -56,7 +56,8 @@
             </div>
           </div>
         </div>
-        <div class="view-module has-text-white" v-show="module == 1">
+        <div class="view-module has-text-white" v-show="module == 1" @mousemove="moveInitFov()"
+             @mouseup="stopMoveInitFov()" @mouseout="stopMoveInitFov()">
           <div class="view-content">
             <label class="label has-text-white">
               自动旋转
@@ -73,8 +74,7 @@
           <div class="line"></div>
           <div class="view-content">
             <div class="view-slider">
-              <div class="view-top-slider" @mousedown="startMoveInitFov()" @mousemove="moveInitFov()"
-                   @mouseup="stopMoveInitFov()" @mouseout="stopMoveInitFov()">
+              <div class="view-top-slider" @mousedown="startMoveInitFov()">
                 <span :style="{ left: initFovLeft + 'px'}"><i class="fa fa-map-marker"></i></span>
               </div>
               <vue-slider v-model="sliderValue" :max="180" :tooltipDir="['bottom','bottom']"
@@ -727,6 +727,7 @@
   }
 
   .view-module {
+    user-select: none;
 
     input {
       text-align: center;
