@@ -868,6 +868,9 @@
           width: auto;
           float: left;
         }
+        &:hover {
+          background-color: #427afb;
+        }
       }
 
       .hotspot-item-selected {
