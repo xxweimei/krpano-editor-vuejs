@@ -409,8 +409,10 @@
           let slider = document.querySelector('.view-top-slider')
           let left = window.event.clientX - slider.offsetLeft
           if (left < Math.round(this.minFov * slider.clientWidth / 180)) {
+            if (left < -6) this.stopMoveInitFov()
             left = Math.round(this.minFov * slider.clientWidth / 180)
           } else if (left > Math.round(this.maxFov * slider.clientWidth / 180)) {
+            if (left > slider.clientWidth + 6) this.stopMoveInitFov()
             left = Math.round(this.maxFov * slider.clientWidth / 180)
           }
           this.initFovLeft = left
