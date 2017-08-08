@@ -98,11 +98,11 @@
         </div>
         <div class="hotspot-module" v-show="module == 2">
           <div class="hotspot-add">
-            <a class="button is-small is-info">添加热点</a>
+            <a class="button is-small is-info" @click="showHotspotDetail()">添加热点</a>
           </div>
           <div class="line"></div>
           <div class="hotspot-list">
-            <div class="hotspot-item" v-for="hotspotItem in hotspotList"
+            <div class="hotspot-item" v-for="hotspotItem in hotspotList" @click="showHotspotDetail(hotspotItem)"
                  :class="{'hotspot-item-selected':  selectedHotspot.name == hotspotItem.name}">
               <img :src="hotspotItem.url">
               <div>场景切换</div>
@@ -110,7 +110,11 @@
           </div>
         </div>
       </div>
-      <div class="hotspot-detail" v-show="false">
+      <div class="hotspot-detail" v-show="showHotspotDetailFlag">
+        <div>
+          <span>热点管理</span>
+          <button class="delete" @click="hideHotspotDetail()"></button>
+        </div>
       </div>
     </div>
     <div class="camera" v-show="module == 1">
@@ -186,7 +190,9 @@
         //选中移动热点
         selectedHotspot: {},
         //热点移动状态
-        isHotspotMoving: false
+        isHotspotMoving: false,
+        //展示热点详情标识
+        showHotspotDetailFlag: false
       }
     },
     computed: {
@@ -482,6 +488,14 @@
           this.krpano.set('hotspot[' + this.selectedHotspot.name + '].atv'
             , this.krpano.get("mouseatv") + this.selectedHotspot.atvDis)
         }
+      },
+      //显示热点详情
+      showHotspotDetail(hotspotItem) {
+        this.showHotspotDetailFlag = true
+      },
+      //隐藏热点详情
+      hideHotspotDetail() {
+        this.showHotspotDetailFlag = false
       }
     }
   }
@@ -883,7 +897,7 @@
   .hotspot-detail {
     width: 100%;
     height: 100%;
-    background-color: grey;
+    background-color: #333333;
     z-index: 999;
     position: absolute;
   }
