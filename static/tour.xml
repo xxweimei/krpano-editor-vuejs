@@ -22,6 +22,7 @@
     </image>
     <autorotate enabled="false" waittime="1.5" accel="1.0" speed="5.0" horizon="0.0"/>
     <hotspot ath="176.71405726704168" atv="1.4485638805220904" linkedscene="test2" name="spot1498207153849" style="skin_hotspotstyle" dive="true"/>
+    <hotspot ath="0" atv="0" linkedscene="test2" name="spot1498207153555" style="skin_hotspotstyle" dive="true"/>
   </scene>
   <scene name="test2" title="2" onstart="" havevrimage="true" thumburl="panos/2.tiles/thumb.jpg" lat="" lng="" heading="">
     <view hlookat="-136.3554582663959" vlookat="35.87783275313946" fovtype="MFOV" fov="120" fovmin="120" fovmax="120" limitview="auto"/>

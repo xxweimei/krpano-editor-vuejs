@@ -110,6 +110,8 @@
           </div>
         </div>
       </div>
+      <div class="hotspot-detail" v-show="false">
+      </div>
     </div>
     <div class="camera" v-show="module == 1">
       <div class="camera-top"></div>
@@ -138,7 +140,6 @@
         <a class="button" :disabled="!sceneNameValid" @click="modifySceneName()">确定</a>
       </div>
     </my-dialog>
-    <div class="hotspot-detail" v-show="false"></div>
   </div>
 </template>
 
@@ -877,6 +878,14 @@
         background-color: #427afb;
       }
     }
+  }
+
+  .hotspot-detail {
+    width: 100%;
+    height: 100%;
+    background-color: grey;
+    z-index: 999;
+    position: absolute;
   }
 
 </style>
