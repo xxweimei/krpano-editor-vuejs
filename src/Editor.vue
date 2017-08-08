@@ -102,18 +102,9 @@
           </div>
           <div class="line"></div>
           <div class="hotspot-list">
-            <div class="hotspot-item">
-              <div>
-                <figure class="image is-32x32">
-                  <img src="http://bulma.io/images/placeholders/128x128.png">
-                </figure>
-              </div>
-              <div>
-                场景切换
-              </div>
-            </div>
-            <div class="hotspot-item">
-
+            <div class="hotspot-item" v-for="hotspotItem in hotspotList">
+              <img :src="hotspotItem.url">
+              <div>场景切换</div>
             </div>
           </div>
         </div>
@@ -189,7 +180,13 @@
         //初始fov移动条移动开关
         initFovMoveFlag: false,
         //鼠标相对于浏览器窗口X轴坐标
-        mouseClientX: 0
+        mouseClientX: 0,
+        //热点列表
+        hotspotList: [],
+        //选中移动热点
+        selectedHotspot: {},
+        //热点移动状态
+        isHotspotMoving: false
       }
     },
     computed: {
@@ -247,12 +244,25 @@
         this.sceneList = this.krpano.get('scene').getArray()
         this.currentSceneIndex = this.krpano.get('scene').getItem(this.krpano.get('xml.scene')).index
         this.welcomeSceneIndex = this.krpano.get('scene').getItem(this.krpano.get('startscene')).index
+        this.initViewAndHotSpot()
+      },
+      //根据krpano参数初始化视角和热点模块数据
+      initViewAndHotSpot() {
         //初始化视角参数
         this.autoSpinWaitingTime = this.krpano.get('autorotate.waittime')
         this.autoSpinFlag = this.krpano.get('autorotate.enabled')
         this.minFov = this.krpano.get('view.fovmin')
         this.maxFov = this.krpano.get('view.fovmax')
         this.initFov = this.krpano.get('view.fov')
+        //热点初始化
+        this.sceneList[this.currentSceneIndex].hotspots = []
+        this.krpano.get('hotspot').getArray().forEach((hotspot) => {
+          if (hotspot.name != 'webvr_prev_scene' && hotspot.name != 'webvr_next_scene' && hotspot.name != 'vr_cursor') {
+            this.hotspotList.push(hotspot)
+            this.sceneList[this.currentSceneIndex].hotspots.push(hotspot)
+            this.initHotspotEvent(hotspot)
+          }
+        })
       },
       //切换操作模块
       changeModule(module) {
@@ -264,26 +274,40 @@
         this.currentSceneIndex = scene.index
         this.krpano.call('loadscene(' + scene.name + ')');
         let currentScene = this.sceneList[this.currentSceneIndex]
-        //加载自动旋转数据
+        //加载临时存储数据应用于krpano
+        //自动旋转
         if (currentScene.autorotate) {
-          this.autoSpinFlag = currentScene.autorotate.enabled
-          this.autoSpinWaitingTime = currentScene.autorotate.waitTime
           this.krpano.set('autorotate.enabled', currentScene.autorotate.enabled)
           this.krpano.set('autorotate.waittime', currentScene.autorotate.waitTime)
-        } else {
-          this.autoSpinFlag = this.krpano.get('autorotate.enabled')
-          this.autoSpinWaitingTime = this.krpano.get('autorotate.waittime')
         }
         if (this.autoSpinFlag) this.krpano.get('autorotate').interrupt()
-        //加载视角数据
+        //视角
         if (currentScene.initH) this.krpano.set('view.hlookat', currentScene.initH)
         if (currentScene.initV) this.krpano.set('view.vlookat', currentScene.initV)
         if (currentScene.fovmax) this.krpano.set('view.fovmax', currentScene.fovmax)
-        this.maxFov = this.krpano.get('view.fovmax')
         if (currentScene.fovmin) this.krpano.set('view.fovmin', currentScene.fovmin)
-        this.minFov = this.krpano.get('view.fovmin')
         if (currentScene.fov) this.krpano.set('view.fov', currentScene.fov)
-        this.initFov = this.krpano.get('view.fov')
+        //热点
+        this.hotspotList = []
+        if (currentScene.hotspots && currentScene.hotspotsModifyFlag) {
+          //清除原有热点
+          this.krpano.get('hotspot').getArray().forEach((hotspot) => {
+            if (hotspot.name != 'webvr_prev_scene' && hotspot.name != 'webvr_next_scene' && hotspot.name != 'vr_cursor') {
+              this.krpano.call('removehotspot(' + hotspot.name + ')')
+            }
+          })
+          //添加存储数据热点
+          currentScene.hotspots.forEach((hotspot) => {
+            this.krpano.call('addhotspot(' + hotspot.name + ');');
+            this.krpano.set('hotspot[' + hotspot.name + '].ath', hotspot.ath);
+            this.krpano.set('hotspot[' + hotspot.name + '].atv', hotspot.atv);
+            this.krpano.set('hotspot[' + hotspot.name + '].linkedscene', hotspot.linkedscene);
+            this.krpano.set('hotspot[' + hotspot.name + '].dive', hotspot.dive);
+            this.krpano.get('hotspot[' + hotspot.name + ']').loadstyle(hotspot.style);
+          })
+        }
+        //初始化模块数据
+        this.initViewAndHotSpot()
       },
       //设置为home页
       setWelcome(index) {
@@ -331,7 +355,7 @@
           }
         }
         if (repeatFlag) {
-          alert('123')
+          alert('场景名称重复')
           return
         }
         //修改场景名称（相关联的热点，当前场景scene名称也需修改）
@@ -341,7 +365,18 @@
         this.krpano.get('scene').renameItem(oldName, newName)
         this.sceneList[this.toModifyScene.index].name = newName
         //修改krpano热点指向场景名称
-        //todo
+        this.sceneList.forEach((scene) => {
+          if (scene.index != this.toModifyScene.index) {
+            scene.hotspots.forEach((hotspot) => {
+              if (hotspot.linkedscene == oldName) {
+                hotspot.linkedscene = newName
+                scene.hotspotsModifyFlag = true
+                if (scene.index == this.currentSceneIndex)
+                  this.krpano.set('hotspot[' + hotspot.name + '].linkedscene', newName)
+              }
+            })
+          }
+        })
         this.showModifySceneNameFlag = false
         this.toSaveFlag = true
       },
@@ -392,6 +427,28 @@
       },
       stopMoveInitFov() {
         this.initFovMoveFlag = false
+      },
+      //热点事件初始化
+      initHotspotEvent(hotspot) {
+        let thisVue = this
+        hotspot.ondown = function () {
+          thisVue.selectHotspot()
+          thisVue.isHotspotMoving = true
+        }
+        hotspot.onclick = null
+      },
+      //热点选择
+      selectHotspot() {
+        this.krpano.call('screentosphere(mouse.x, mouse.y, mouseath, mouseatv);')
+        this.krpano.get('hotspot').getArray().forEach((hotspot) => {
+          let dis = Math.abs(hotspot.ath - this.krpano.get('mouseath')) + Math.abs(hotspot.atv - this.krpano.get('mouseatv'))
+          if (!this.selectedHotspot.dis || dis < this.selectedHotspot.dis) {
+            this.selectedHotspot = {
+              name: hotspot.name,
+              dis: dis
+            }
+          }
+        })
       }
     }
   }
@@ -760,17 +817,23 @@
     }
 
     .hotspot-list {
-      padding: 10px 0;
+      padding: 5px 0;
 
       .hotspot-item {
-        margin: 10px 0;
-        height: 40px;
-        padding: 4px 0 4px 10px;
+        margin: 5px 0;
+        padding: 4px 10px;
         background-color: #3a3a3a;
+        cursor: pointer;
         div {
-          float: left;
           line-height: 32px;
+          height: auto;
           color: white;
+          text-align: center;
+        }
+        img {
+          height: 32px;
+          width: auto;
+          float: left;
         }
       }
     }
