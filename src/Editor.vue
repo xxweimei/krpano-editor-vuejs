@@ -42,7 +42,7 @@
                :class="{'scene-item-selected' : scene.index == currentSceneIndex}">
             <div class="scene-name" @click="changeScene(scene)">{{scene.name}}</div>
             <figure class="image is-128x128" @click="changeScene(scene)">
-              <img src="../static/panos/1.tiles/thumb.jpg">
+              <img :src="scene.thumburl">
             </figure>
             <div class="pencil" @click="showModifySceneName(scene)">
               <a class="button is-primary is-inverted is-outlined"><span class="icon"><i
@@ -120,10 +120,13 @@
       <div class="hotspot-detail-content">
         <div class="field">
           <label class="label has-text-white">图标样式</label>
-          <div class="hotspot-detail-list">
+          <div class="hotspot-detail-style-list">
             <div class="columns is-multiline">
               <div class="column is-3" v-for="style in hotspotStyleList">
-                <img :src="style.imgUrl">
+                <div class="hotspot-detail-style"
+                  :class="{'hotspot-detail-style-selected': currentHotspot && style.name==currentHotspot.style}">
+                  <img :src="style.imgUrl">
+                </div>
               </div>
             </div>
           </div>
@@ -150,19 +153,11 @@
         </div>
         <div class="field">
           <label class="label has-text-white">目标场景</label>
-          <div class="hotspot-detail-list">
+          <div class="hotspot-detail-scene-list">
             <div class="columns is-multiline">
-              <div class="column is-3">
-                Fi
-              </div>
-              <div class="column is-3">
-                Sec
-              </div>
-              <div class="column is-3">
-                Thi
-              </div>
-              <div class="column is-3">
-                Fo
+              <div class="column is-6 has-text-centered" v-for="scene in sceneList">
+                <img :src="scene.thumburl">
+                <span>{{scene.name}}</span>
               </div>
             </div>
           </div>
@@ -987,9 +982,29 @@
         font-weight: 100;
       }
 
-      .hotspot-detail-list {
+      .hotspot-detail-style-list {
         width: 100%;
         height: 128px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 12px;
+
+        .hotspot-detail-style {
+          cursor: pointer;
+          border: solid #333333 1px;
+          &:hover {
+            border-color: #fbd14b;
+          }
+        }
+
+        .hotspot-detail-style-selected {
+          border-color: #fbd14b;
+        }
+      }
+
+      .hotspot-detail-scene-list {
+        width: 100%;
+        height: 350px;
         overflow-y: auto;
         overflow-x: hidden;
         padding-right: 12px;
