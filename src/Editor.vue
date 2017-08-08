@@ -180,8 +180,6 @@
         initFov: 90,
         //初始fov移动条移动开关
         initFovMoveFlag: false,
-        //鼠标相对于浏览器窗口X轴坐标
-        mouseClientX: 0,
         //热点列表
         hotspotList: [],
         //选中移动热点
@@ -418,7 +416,6 @@
           this.initFovLeft = left
           this.krpano.set('view.fov', this.initFov)
           this.sceneList[this.currentSceneIndex].fov = this.initFov
-          this.mouseClientX = window.event.clientX
           this.toSaveFlag = true
         }
       },
