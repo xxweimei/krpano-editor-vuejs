@@ -110,10 +110,62 @@
           </div>
         </div>
       </div>
-      <div class="hotspot-detail" v-show="showHotspotDetailFlag">
-        <div>
-          <span>热点管理</span>
-          <button class="delete" @click="hideHotspotDetail()"></button>
+    </div>
+    <div class="hotspot-detail" v-show="showHotspotDetailFlag">
+      <div class="hotspot-detail-header">
+        <span>{{currentHotspot ? '编辑' : '新增'}}热点</span>
+        <a class="delete is-large" @click="hideHotspotDetail()"></a>
+      </div>
+      <div class="line"></div>
+      <div class="hotspot-detail-content">
+        <div class="field">
+          <label class="label has-text-white">图标样式</label>
+          <div class="hotspot-detail-list">
+            <div class="columns is-multiline">
+              <div class="column is-3" v-for="style in hotspotStyleList">
+                <img :src="style.imgUrl">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label has-text-white">热点类型</label>
+          <div class="control">
+            <div class="select is-info is-small">
+              <select>
+                <option>场景切换</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label has-text-white">切换效果</label>
+          <div class="control">
+            <div class="select is-info is-small">
+              <select>
+                <option>淡入淡出</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label has-text-white">目标场景</label>
+          <div class="hotspot-detail-list">
+            <div class="columns is-multiline">
+              <div class="column is-3">
+                Fi
+              </div>
+              <div class="column is-3">
+                Sec
+              </div>
+              <div class="column is-3">
+                Thi
+              </div>
+              <div class="column is-3">
+                Fo
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -192,7 +244,16 @@
         //热点移动状态
         isHotspotMoving: false,
         //展示热点详情标识
-        showHotspotDetailFlag: false
+        showHotspotDetailFlag: false,
+        //当前热点
+        currentHotspot: null,
+        //热点图标样式列表
+        hotspotStyleList: [
+          {
+            name: 'skin_hotspotstyle',
+            imgUrl: '../static/skin/vtourskin_hotspot.png'
+          }
+        ]
       }
     },
     computed: {
@@ -491,6 +552,7 @@
       },
       //显示热点详情
       showHotspotDetail(hotspotItem) {
+        this.currentHotspot = hotspotItem ? hotspotItem : null
         this.showHotspotDetailFlag = true
       },
       //隐藏热点详情
@@ -895,11 +957,44 @@
   }
 
   .hotspot-detail {
-    width: 100%;
     height: 100%;
+    width: 16.66%;
     background-color: #333333;
     z-index: 999;
     position: absolute;
+    color: white;
+    right: 0;
+    top: 0;
+
+    div {
+      height: auto;
+    }
+
+    .hotspot-detail-header {
+      height: 50px;
+      line-height: 50px;
+      padding-left: 20px;
+      font-size: 18px;
+      a {
+        float: right;
+        margin: 9px;
+      }
+    }
+
+    .hotspot-detail-content {
+      padding: 10px 0 10px 20px;
+      label {
+        font-weight: 100;
+      }
+
+      .hotspot-detail-list {
+        width: 100%;
+        height: 128px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 12px;
+      }
+    }
   }
 
 </style>
