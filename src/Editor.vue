@@ -841,7 +841,7 @@
     }
 
     .hotspot-add {
-      padding: 10px 15px 10px 15px;
+      padding: 10px;
 
       a {
         width: 100%;
