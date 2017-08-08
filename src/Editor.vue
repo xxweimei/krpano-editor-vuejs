@@ -56,8 +56,8 @@
             </div>
           </div>
         </div>
-        <div class="view-module has-text-white" v-show="module == 1" @mousemove="moveInitFov()"
-             @mouseup="stopMoveInitFov()" @mouseout="stopMoveInitFov()">
+        <div class="view-module has-text-white" v-show="module == 1"
+             @mousemove="moveInitFov()" @mouseup="stopMoveInitFov()">
           <div class="view-content">
             <label class="label has-text-white">
               自动旋转
@@ -155,7 +155,7 @@
         //krpano对象
         krpano: document.querySelector('#krpanoSWFObject'),
         //当前修改模块：0场景；1视角；2热点
-        module: 2,
+        module: 0,
         //待保存标识
         toSaveFlag: false,
         //场景列表
