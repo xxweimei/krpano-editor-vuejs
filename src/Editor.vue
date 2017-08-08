@@ -102,7 +102,8 @@
           </div>
           <div class="line"></div>
           <div class="hotspot-list">
-            <div class="hotspot-item" v-for="hotspotItem in hotspotList">
+            <div class="hotspot-item" v-for="hotspotItem in hotspotList"
+                 :class="{'hotspot-item-selected':  selectedHotspot.name == hotspotItem.name}">
               <img :src="hotspotItem.url">
               <div>场景切换</div>
             </div>
@@ -435,20 +436,52 @@
           thisVue.selectHotspot()
           thisVue.isHotspotMoving = true
         }
+        hotspot.onover = function () {
+          thisVue.selectHotspot()
+        }
+        hotspot.onout = function () {
+          thisVue.selectedHotspot = {}
+        }
         hotspot.onclick = null
+        let pano = document.querySelector('#pano')
+        pano.onmouseup = function () {
+          thisVue.isHotspotMoving = false
+        }
+        pano.onmouseout = function () {
+          thisVue.isHotspotMoving = false
+        }
+        pano.onmousemove = function () {
+          thisVue.moveHotspot()
+        }
       },
       //热点选择
       selectHotspot() {
         this.krpano.call('screentosphere(mouse.x, mouse.y, mouseath, mouseatv);')
         this.krpano.get('hotspot').getArray().forEach((hotspot) => {
-          let dis = Math.abs(hotspot.ath - this.krpano.get('mouseath')) + Math.abs(hotspot.atv - this.krpano.get('mouseatv'))
-          if (!this.selectedHotspot.dis || dis < this.selectedHotspot.dis) {
-            this.selectedHotspot = {
-              name: hotspot.name,
-              dis: dis
+          if (hotspot.name != 'webvr_prev_scene' && hotspot.name != 'webvr_next_scene' && hotspot.name != 'vr_cursor') {
+            let athDis = hotspot.ath - this.krpano.get('mouseath')
+            let atvDis = hotspot.atv - this.krpano.get('mouseatv')
+            let dis = Math.abs(athDis) + Math.abs(atvDis)
+            if (!this.selectedHotspot.dis || dis < this.selectedHotspot.dis) {
+              this.selectedHotspot = {
+                name: hotspot.name,
+                dis: dis,
+                athDis: athDis,
+                atvDis: atvDis
+              }
             }
           }
         })
+      },
+      //热点移动
+      moveHotspot() {
+        if (this.isHotspotMoving) {
+          this.krpano.call('screentosphere(mouse.x, mouse.y, mouseath, mouseatv);')
+          this.krpano.set('hotspot[' + this.selectedHotspot.name + '].ath'
+            , this.krpano.get("mouseath") + this.selectedHotspot.athDis)
+          this.krpano.set('hotspot[' + this.selectedHotspot.name + '].atv'
+            , this.krpano.get("mouseatv") + this.selectedHotspot.atvDis)
+        }
       }
     }
   }
@@ -835,6 +868,10 @@
           width: auto;
           float: left;
         }
+      }
+
+      .hotspot-item-selected {
+        background-color: #427afb;
       }
     }
   }
