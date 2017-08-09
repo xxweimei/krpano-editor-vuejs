@@ -121,7 +121,7 @@
         <div class="field">
           <label class="label has-text-white">图标样式</label>
           <div class="columns is-multiline hotspot-detail-style-list">
-            <div class="column is-3" v-for="style in hotspotStyleList">
+            <div class="column is-4" v-for="style in hotspotStyleList">
               <div class="hotspot-detail-style" @click="selectHotspotStyle(style.name)"
                    :class="{'hotspot-detail-style-selected': style.name==currentHotspot.style}">
                 <img :src="style.imgUrl">
