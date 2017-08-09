@@ -14,7 +14,7 @@
 + clone项目到本地
 + 安装nodejs（已装的同学跳过）
 + 在项目根目录执行 `npm install` 安装相关依赖包
-+ 在项目根目录执行 `npm run dev` 启动项目（默认弹出页面，未弹出访问http://localhost:8080/即可）
++ 在项目根目录执行 `npm run dev` 启动项目（默认弹出页面，未弹出访问`http://localhost:8080/`即可）
 + 在项目根目录执行 `npm run build` 打包项目
 ## 关于项目的一些说明
 + 使用简单的nodejs express提供静态资源服务器功能，以及提供保存接口实现本地tour.xml文件的修改，具体参考build/dev-server.js文件中注释点
