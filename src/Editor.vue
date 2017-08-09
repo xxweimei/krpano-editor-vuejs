@@ -575,35 +575,23 @@
       initHotspotEvent(hotspot) {
         let thisVue = this
         hotspot.ondown = function () {
+          thisVue.selectedHotspot = hotspot
           thisVue.selectHotspot()
           thisVue.isHotspotMoving = true
         }
         hotspot.onover = function () {
-          thisVue.selectHotspot()
+          thisVue.selectedHotspot = hotspot
         }
         hotspot.onout = function () {
           thisVue.selectedHotspot = {}
         }
         hotspot.onclick = null
       },
-      //热点选择
+      //热点坐标与鼠标坐标偏移计算
       selectHotspot() {
         this.krpano.call('screentosphere(mouse.x, mouse.y, mouseath, mouseatv);')
-        this.krpano.get('hotspot').getArray().forEach((hotspot) => {
-          if (hotspot.name != 'webvr_prev_scene' && hotspot.name != 'webvr_next_scene' && hotspot.name != 'vr_cursor') {
-            let athDis = hotspot.ath - this.krpano.get('mouseath')
-            let atvDis = hotspot.atv - this.krpano.get('mouseatv')
-            let dis = Math.abs(athDis) + Math.abs(atvDis)
-            if (!this.selectedHotspot.dis || dis < this.selectedHotspot.dis) {
-              this.selectedHotspot = {
-                name: hotspot.name,
-                dis: dis,
-                athDis: athDis,
-                atvDis: atvDis
-              }
-            }
-          }
-        })
+        this.selectedHotspot.athDis = this.selectedHotspot.ath - this.krpano.get('mouseath')
+        this.selectedHotspot.atvDis = this.selectedHotspot.atv - this.krpano.get('mouseatv')
       },
       //热点移动
       moveHotspot() {
