@@ -120,13 +120,11 @@
       <div class="hotspot-detail-content">
         <div class="field">
           <label class="label has-text-white">图标样式</label>
-          <div class="hotspot-detail-style-list">
-            <div class="columns is-multiline">
-              <div class="column is-3" v-for="style in hotspotStyleList">
-                <div class="hotspot-detail-style"
-                     :class="{'hotspot-detail-style-selected': currentHotspot && style.name==currentHotspot.style}">
-                  <img :src="style.imgUrl">
-                </div>
+          <div class="columns is-multiline hotspot-detail-style-list">
+            <div class="column is-3" v-for="style in hotspotStyleList">
+              <div class="hotspot-detail-style"
+                   :class="{'hotspot-detail-style-selected': style.name==currentHotspot.style}">
+                <img :src="style.imgUrl">
               </div>
             </div>
           </div>
@@ -153,14 +151,12 @@
         </div>
         <div class="field">
           <label class="label has-text-white">目标场景</label>
-          <div class="hotspot-detail-scene-list">
-            <div class="columns is-multiline">
-              <div class="column is-6 has-text-centered" v-for="scene in sceneListExceptCurrent">
-                <div class="hotspot-detail-scene"
-                     :class="{'hotspot-detail-scene-selected':currentHotspot && scene.name==currentHotspot.linkedscene}">
-                  <img :src="scene.thumburl">
-                  <span>{{scene.name}}</span>
-                </div>
+          <div class="columns is-multiline hotspot-detail-scene-list">
+            <div class="column is-6 has-text-centered" v-for="scene in sceneListExceptCurrent">
+              <div class="hotspot-detail-scene"
+                   :class="{'hotspot-detail-scene-selected': scene.name==currentHotspot.linkedscene}">
+                <img :src="scene.thumburl">
+                <span>{{scene.name}}</span>
               </div>
             </div>
           </div>
@@ -244,7 +240,10 @@
         //展示热点详情标识
         showHotspotDetailFlag: false,
         //当前热点
-        currentHotspot: null,
+        currentHotspot: {
+          style: null,
+          linkedscene: null
+        },
         //热点图标样式列表
         hotspotStyleList: [
           {
@@ -560,7 +559,10 @@
       },
       //显示热点详情
       showHotspotDetail(hotspotItem) {
-        this.currentHotspot = hotspotItem ? hotspotItem : null
+        this.currentHotspot = hotspotItem ? hotspotItem : {
+          style: this.hotspotStyleList[0].name,
+          linkedscene: this.sceneListExceptCurrent[0].name
+        }
         this.showHotspotDetailFlag = true
       },
       //隐藏热点详情
@@ -935,10 +937,9 @@
     }
 
     .hotspot-list {
-      padding: 5px 0;
 
       .hotspot-item {
-        margin: 5px 0;
+        margin: 10px 0;
         padding: 4px 10px;
         background-color: #3a3a3a;
         cursor: pointer;
