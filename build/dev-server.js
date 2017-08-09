@@ -105,7 +105,7 @@ app.post('/server/save', function (req, res) {
         if (scene.initV) viewAttr.vlookat = scene.initV
         if (scene.fov) viewAttr.fov = scene.fov
         if (scene.fovmax) viewAttr.fovmax = scene.fovmax
-        if (scene.fovmin) viewAttr.fovmin = scene.fovmin
+        if (!isNaN(Number.parseInt(scene.fovmin))) viewAttr.fovmin = scene.fovmin
         delete viewAttr.maxpixelzoom
         //场景名称
         sceneObj.$.name = scene.name

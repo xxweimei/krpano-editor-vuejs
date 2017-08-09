@@ -431,7 +431,7 @@
             autorotate: scene.autorotate ? scene.autorotate : null,
             fov: scene.fov ? scene.fov : null,
             fovmax: scene.fovmax ? scene.fovmax : null,
-            fovmin: scene.fovmin ? scene.fovmin : null,
+            fovmin: !isNaN(Number.parseInt(scene.fovmin)) ? scene.fovmin : null,
             initH: scene.initH ? scene.initH : null,
             initV: scene.initV ? scene.initV : null
           }
