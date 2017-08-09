@@ -256,7 +256,9 @@
             name: 'skin_hotspotstyle',
             imgUrl: '../static/skin/vtourskin_hotspot.png'
           }
-        ]
+        ],
+        //接口请求状态
+        requesting: false
       }
     },
     computed: {
@@ -414,20 +416,62 @@
       },
       //保存
       save() {
+        if (!this.toSaveFlag) return
+        if (this.requesting) {
+          alert('保存中，请稍后再试')
+          return
+        }
+        this.requesting = true
         let data = []
         this.sceneList.forEach((scene) => {
-          data.push({
+          let sceneData = {
             index: scene.index,
             name: scene.name,
             welcomeFlag: scene.index == this.welcomeSceneIndex,
             autorotate: scene.autorotate ? scene.autorotate : null,
             fov: scene.fov ? scene.fov : null,
             fovmax: scene.fovmax ? scene.fovmax : null,
-            fovmin: scene.fovmin ? scene.fovmin : null
-          })
+            fovmin: scene.fovmin ? scene.fovmin : null,
+            initH: scene.initH ? scene.initH : null,
+            initV: scene.initV ? scene.initV : null
+          }
+          if (scene.hotspots) {
+            let hotSpots = []
+            scene.hotspots.forEach((hotspot) => {
+              hotSpots.push({
+                ath: hotspot.ath,
+                atv: hotspot.atv,
+                name: hotspot.name,
+                linkedscene: hotspot.linkedscene,
+                style: hotspot.style,
+                dive: hotspot.dive
+              })
+            })
+            sceneData.hotSpots = hotSpots
+          }
+          data.push(sceneData)
         })
         console.log(data)
-        this.toSaveFlag = false
+        fetch('/server/save', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+          },
+          body: JSON.stringify(data)
+        }).then((res) => {
+          this.requesting = false
+          if (res.status === 200) {
+            res.text().then((resText) => {
+              this.toSaveFlag = false
+              alert(resText)
+            })
+          } else {
+            alert('系统异常')
+          }
+        }, () => {
+          this.requesting = false
+          alert('系统异常')
+        })
       },
       //预览
       preview() {
@@ -464,7 +508,7 @@
         this.sceneList[this.toModifyScene.index].name = newName
         //修改krpano热点指向场景名称
         this.sceneList.forEach((scene) => {
-          if (scene.index != this.toModifyScene.index) {
+          if (scene.hotspots && scene.index != this.toModifyScene.index) {
             scene.hotspots.forEach((hotspot) => {
               if (hotspot.linkedscene == oldName) {
                 hotspot.linkedscene = newName
