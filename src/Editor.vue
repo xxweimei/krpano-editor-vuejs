@@ -656,12 +656,14 @@
         }
         this.initHotSpot()
         this.showHotspotDetailFlag = false
+        this.toSaveFlag = true
       },
       //删除热点
       deleteCurrentHotspot() {
         this.krpano.call('removehotspot(' + this.currentHotspot.name + ')')
         this.initHotSpot()
         this.showHotspotDetailFlag = false
+        this.toSaveFlag = true
       }
     }
   }
