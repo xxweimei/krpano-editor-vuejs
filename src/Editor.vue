@@ -124,7 +124,7 @@
             <div class="columns is-multiline">
               <div class="column is-3" v-for="style in hotspotStyleList">
                 <div class="hotspot-detail-style"
-                  :class="{'hotspot-detail-style-selected': currentHotspot && style.name==currentHotspot.style}">
+                     :class="{'hotspot-detail-style-selected': currentHotspot && style.name==currentHotspot.style}">
                   <img :src="style.imgUrl">
                 </div>
               </div>
@@ -155,9 +155,12 @@
           <label class="label has-text-white">目标场景</label>
           <div class="hotspot-detail-scene-list">
             <div class="columns is-multiline">
-              <div class="column is-6 has-text-centered" v-for="scene in sceneList">
-                <img :src="scene.thumburl">
-                <span>{{scene.name}}</span>
+              <div class="column is-6 has-text-centered" v-for="scene in sceneListExceptCurrent">
+                <div class="hotspot-detail-scene"
+                     :class="{'hotspot-detail-scene-selected':currentHotspot && scene.name==currentHotspot.linkedscene}">
+                  <img :src="scene.thumburl">
+                  <span>{{scene.name}}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -293,6 +296,16 @@
           let sliderWidth = document.querySelector('#editor').clientWidth * 5 / 6 - 32
           this.initFov = Math.round(val * 180 / sliderWidth)
         }
+      },
+      //除当前场景外场景列表
+      sceneListExceptCurrent() {
+        let scenes = []
+        this.sceneList.forEach((scene) => {
+          if (scene.index != this.currentSceneIndex) {
+            scenes.push(scene)
+          }
+        })
+        return scenes
       }
     },
     methods: {
@@ -1004,10 +1017,21 @@
 
       .hotspot-detail-scene-list {
         width: 100%;
-        height: 350px;
+        height: 360px;
         overflow-y: auto;
         overflow-x: hidden;
         padding-right: 12px;
+
+        .hotspot-detail-scene {
+          cursor: pointer;
+          border: solid #333333 2px;
+          &:hover {
+            border-color: #fbd14b;
+          }
+        }
+        .hotspot-detail-scene-selected {
+          border-color: #fbd14b;
+        }
       }
     }
   }
