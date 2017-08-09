@@ -114,7 +114,7 @@
     <div class="hotspot-detail" v-show="showHotspotDetailFlag">
       <div class="hotspot-detail-header">
         <span>{{currentHotspot ? '编辑' : '新增'}}热点</span>
-        <a class="delete is-large" @click="hideHotspotDetail()"></a>
+        <a class="delete is-large is-pulled-right" @click="hideHotspotDetail()"></a>
       </div>
       <div class="line"></div>
       <div class="hotspot-detail-content">
@@ -160,6 +160,12 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="field hotspot-detail-button">
+          <button class="button is-info">确定</button>
+        </div>
+        <div class="field hotspot-detail-button">
+          <button class="button is-danger">删除</button>
         </div>
       </div>
     </div>
@@ -985,7 +991,6 @@
       padding-left: 20px;
       font-size: 18px;
       a {
-        float: right;
         margin: 9px;
       }
     }
@@ -998,7 +1003,7 @@
 
       .hotspot-detail-style-list {
         width: 100%;
-        height: 128px;
+        max-height: 150px;
         overflow-y: auto;
         overflow-x: hidden;
         padding-right: 12px;
@@ -1018,7 +1023,7 @@
 
       .hotspot-detail-scene-list {
         width: 100%;
-        height: 360px;
+        max-height: 350px;
         overflow-y: auto;
         overflow-x: hidden;
         padding-right: 12px;
@@ -1032,6 +1037,13 @@
         }
         .hotspot-detail-scene-selected {
           border-color: #fbd14b;
+        }
+      }
+
+      .hotspot-detail-button {
+        padding-right: 20px;
+        button {
+          width: 100%;
         }
       }
     }
