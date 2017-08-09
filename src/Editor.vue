@@ -113,7 +113,7 @@
     </div>
     <div class="hotspot-detail" v-show="showHotspotDetailFlag">
       <div class="hotspot-detail-header">
-        <span>{{currentHotspot ? '编辑' : '新增'}}热点</span>
+        <span>{{currentHotspot.name ? '编辑' : '新增'}}热点</span>
         <a class="delete is-large is-pulled-right" @click="hideHotspotDetail()"></a>
       </div>
       <div class="line"></div>
@@ -122,7 +122,7 @@
           <label class="label has-text-white">图标样式</label>
           <div class="columns is-multiline hotspot-detail-style-list">
             <div class="column is-3" v-for="style in hotspotStyleList">
-              <div class="hotspot-detail-style"
+              <div class="hotspot-detail-style" @click="selectHotspotStyle(style.name)"
                    :class="{'hotspot-detail-style-selected': style.name==currentHotspot.style}">
                 <img :src="style.imgUrl">
               </div>
@@ -153,7 +153,7 @@
           <label class="label has-text-white">目标场景</label>
           <div class="columns is-multiline hotspot-detail-scene-list">
             <div class="column is-6 has-text-centered" v-for="scene in sceneListExceptCurrent">
-              <div class="hotspot-detail-scene"
+              <div class="hotspot-detail-scene" @click="selectHotspotLinkedScene(scene.name)"
                    :class="{'hotspot-detail-scene-selected': scene.name==currentHotspot.linkedscene}">
                 <img :src="scene.thumburl">
                 <span>{{scene.name}}</span>
@@ -162,10 +162,10 @@
           </div>
         </div>
         <div class="field hotspot-detail-button">
-          <button class="button is-info">确定</button>
+          <button class="button is-info" @click="saveCurrentHotspot()">确定</button>
         </div>
-        <div class="field hotspot-detail-button">
-          <button class="button is-danger">删除</button>
+        <div class="field hotspot-detail-button" v-show="currentHotspot.name">
+          <button class="button is-danger" @click="deleteCurrentHotspot()">删除</button>
         </div>
       </div>
     </div>
@@ -324,18 +324,36 @@
         this.sceneList = this.krpano.get('scene').getArray()
         this.currentSceneIndex = this.krpano.get('scene').getItem(this.krpano.get('xml.scene')).index
         this.welcomeSceneIndex = this.krpano.get('scene').getItem(this.krpano.get('startscene')).index
-        this.initViewAndHotSpot()
+        //热点移动事件初始化
+        let thisVue = this
+        let pano = document.querySelector('#pano')
+        pano.onmouseup = function () {
+          thisVue.isHotspotMoving = false
+        }
+        pano.onmouseout = function () {
+          thisVue.isHotspotMoving = false
+        }
+        pano.onmousemove = function () {
+          thisVue.moveHotspot()
+        }
+        //模块数据初始化
+        this.initView()
+        this.initHotSpot()
+
       },
       //根据krpano参数初始化视角和热点模块数据
-      initViewAndHotSpot() {
+      initView() {
         //初始化视角参数
         this.autoSpinWaitingTime = this.krpano.get('autorotate.waittime')
         this.autoSpinFlag = this.krpano.get('autorotate.enabled')
         this.minFov = this.krpano.get('view.fovmin')
         this.maxFov = this.krpano.get('view.fovmax')
         this.initFov = this.krpano.get('view.fov')
-        //热点初始化
+      },
+      //热点初始化
+      initHotSpot() {
         this.sceneList[this.currentSceneIndex].hotspots = []
+        this.hotspotList = []
         this.krpano.get('hotspot').getArray().forEach((hotspot) => {
           if (hotspot.name != 'webvr_prev_scene' && hotspot.name != 'webvr_next_scene' && hotspot.name != 'vr_cursor') {
             this.hotspotList.push(hotspot)
@@ -368,7 +386,6 @@
         if (currentScene.fovmin) this.krpano.set('view.fovmin', currentScene.fovmin)
         if (currentScene.fov) this.krpano.set('view.fov', currentScene.fov)
         //热点
-        this.hotspotList = []
         if (currentScene.hotspots && currentScene.hotspotsModifyFlag) {
           //清除原有热点
           this.krpano.get('hotspot').getArray().forEach((hotspot) => {
@@ -387,7 +404,8 @@
           })
         }
         //初始化模块数据
-        this.initViewAndHotSpot()
+        this.initView()
+        this.initHotSpot()
       },
       //设置为home页
       setWelcome(index) {
@@ -523,16 +541,6 @@
           thisVue.selectedHotspot = {}
         }
         hotspot.onclick = null
-        let pano = document.querySelector('#pano')
-        pano.onmouseup = function () {
-          thisVue.isHotspotMoving = false
-        }
-        pano.onmouseout = function () {
-          thisVue.isHotspotMoving = false
-        }
-        pano.onmousemove = function () {
-          thisVue.moveHotspot()
-        }
       },
       //热点选择
       selectHotspot() {
@@ -567,12 +575,48 @@
       showHotspotDetail(hotspotItem) {
         this.currentHotspot = hotspotItem ? hotspotItem : {
           style: this.hotspotStyleList[0].name,
-          linkedscene: this.sceneListExceptCurrent[0].name
+          linkedscene: this.sceneListExceptCurrent[0].name,
+          dive: true
         }
         this.showHotspotDetailFlag = true
       },
       //隐藏热点详情
       hideHotspotDetail() {
+        this.showHotspotDetailFlag = false
+      },
+      //选择热点图标样式
+      selectHotspotStyle(name) {
+        this.currentHotspot.style = name
+      },
+      //选择切换场景热点目标场景
+      selectHotspotLinkedScene(name) {
+        this.currentHotspot.linkedscene = name
+      },
+      //保存当前热点变动
+      saveCurrentHotspot() {
+        if (!this.currentHotspot.name) {
+          // 计算中间位置的球面坐标
+          this.krpano.set('halfHeight', this.krpano.get('stageheight') / 2)
+          this.krpano.set('halfWidth', this.krpano.get('stagewidth') / 2)
+          this.krpano.call('screentosphere(halfWidth,halfHeight,init_h,init_v);')
+          let init_h = this.krpano.get('init_h')
+          let init_v = this.krpano.get('init_v')
+          //添加热点
+          let name = 'spot' + new Date().getTime()
+          this.krpano.call('addhotspot(' + name + ');')
+          this.krpano.get('hotspot[' + name + ']').loadstyle(this.currentHotspot.style)
+          this.krpano.set('hotspot[' + name + '].ath', init_h)
+          this.krpano.set('hotspot[' + name + '].atv', init_v)
+          this.krpano.set('hotspot[' + name + '].linkedscene', this.currentHotspot.linkedscene)
+          this.krpano.set('hotspot[' + name + '].dive', this.currentHotspot.dive)
+        }
+        this.initHotSpot()
+        this.showHotspotDetailFlag = false
+      },
+      //删除热点
+      deleteCurrentHotspot() {
+        this.krpano.call('removehotspot(' + this.currentHotspot.name + ')')
+        this.initHotSpot()
         this.showHotspotDetailFlag = false
       }
     }
