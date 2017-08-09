@@ -1,6 +1,6 @@
 # krpano-editor-vuejs
 
-> 场景，视角模块已完成，热点模块不定期施工
+> 初版已完成，正在美化页面，测试功能，修复bug
 
 ## Build Setup
 
