@@ -29,3 +29,7 @@
 + 新增热点样式
 + 新增热点类型
 + 新增热点切换效果
+
+## 捐赠
++ 如果觉得项目不错，请作者喝杯咖啡吧
++ <img src="https://xxweimei.github.io/blog/img/alipay.jpg" width="267" height="318"></img>
