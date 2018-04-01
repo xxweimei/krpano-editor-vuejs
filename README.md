@@ -6,7 +6,7 @@
 使用了bulma.io作为样式框架，使用了开源的vue-slider-component作为视角拖动条组件
 如果觉得此项目对您有用，请不要吝啬您的star哦。
 
-> [demo](https://xxweimei.github.io/krpano-vuejs.html)（无后台无法保存）
+> [demo](https://www.5ijx3.com/)
 
 > [原jquery版本](https://github.com/xxweimei/krpano-editor-js)
 
